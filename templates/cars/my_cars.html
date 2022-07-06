@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% block title %}Add Vehicle {% endblock %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<main id="main">
+  <section id="my_car" class="my_car" style="min-height:70vh;">
+    <div class="container" data-aos="fade-up">
+  
+      <div class="row">
+  
+        <div class="col-lg-10 mx-auto">
+          <br>
+  <nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <button class="nav-link active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all" type="button" role="tab" aria-controls="nav-all" aria-selected="true">All Vehicles</button>
+      <button class="nav-link" id="nav-sold-tab" data-bs-toggle="tab" data-bs-target="#nav-sold" type="button" role="tab" aria-controls="nav-sold" aria-selected="false">Sold Vehicles</button>
+      <button class="nav-link" id="nav-not_sold-tab" data-bs-toggle="tab" data-bs-target="#nav-not_sold" type="button" role="tab" aria-controls="nav-not_sold" aria-selected="false">Not Sold Vehicles</button>
+      <button class="nav-link" id="nav-waiting_payment-tab" data-bs-toggle="tab" data-bs-target="#nav-waiting_payment" type="button" role="tab" aria-controls="nav-waiting_payment" aria-selected="false">Vehicle Bids Waiting For Payments</button>
+     
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
+      
+      <div class="container">
+        <div class="row d-flex align-items-stretch">
+        <h3 class="text-center my-4">All Vehicles</h3>
+
+{% for all_car in all_cars %}
+
+<div class="col-md-6 col-lg-6 col-sm-12">
+  <div class="card py-1  my-3"> 
+    <div class="card-body">
+      <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_car.get_absolute_url}}">{{all_car.car_make}} ,{{all_car.car_name}} </a> </h5>
+      <ul class="list-unstyled">
+        <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{all_car.stock_id}}</span></li>
+         
+              <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-lighter ml-3">Ksh {{all_car.price}}</span></li>
+           
+              <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{all_car.mileage}}</span></li>
+  
+   <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light text-info fs-6 fw-bold ml-3">{{all_car.status}}</span></li>
+
+</ul>
+{% if all_car.status == 'WAITING PAYMENT'%}
+<div class="d-grid gap-2 d-md-flex justify-content-md-between">
+  <a href="" class="btn btn-sm btn-outline-success">Buyer Profile </a> 
+   <a href="{% url 'reject_approval' all_car.slug %}" class="btn btn-outline-primary">Cancel Approval</a>
+  
+  </div>
+   {% endif %}
+
+
+   {% if all_car.status == 'SOLD' %}
+
+<a href="" class="btn btn-sm btn-outline-secondary"> View Buyer</a>
+{%elif all_car.status == 'PENDING' %}
+
+<a href="{% url 'this_car_bids' all_car.slug %}" class="btn btn-sm btn-outline-info">View Bids</a>
+{% endif %}
+
+</div>
+</div>
+</div>
+
+
+
+{% empty %}
+<div class="col-md-12">
+  <div class="card py-1  my-3"> 
+    <div class="card-body text-center">
+   
+      <p class="card-text"> You Have No Car !</p>
+      
+    </div>
+  </div>
+  </div>
+{% endfor %}
+</div>
+</div>
+{% if all_cars %} <!---- check if there are object for pagination-->
+<nav aria-label="Page navigation ">
+  <ul class="pagination justify-content-end">
+  {% if all_cars.has_previous %}
+      <li>
+
+<a class="page-link" href="?page={{ all_cars.previous_page_number }}" tabindex="-1" aria-disabled="true">Previous</a>
+</li>    
+{% endif %}
+
+      {% for i in all_cars.paginator.page_range %}
+ {% if all_cars.number == i %}
+ <li class="page-item active" aria-current="page"> <span class="page-link">{{i}}</span> </li>
+   
+    {% else %}
+    
+      <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+  {% endif %}
+  {% endfor %}
+  {% if all_cars.has_next %}          
+
+  <li class="page-item"> <a class="page-link" href="?page={{ all_cars.next_page_number }}">Next</a>  </li>
+{% endif %}
+  </ul>
+  <br>
+
+
+{% endif %}
+
+    </div>
+    <div class="tab-pane fade" id="nav-sold" role="tabpanel" aria-labelledby="nav-sold-tab">
+      <div class="container">
+        <div class="row d-flex align-items-stretch">
+        <h3 class="text-center my-4">Sold Vehicles</h3>
+  
+
+  {% for sold_car in sold_cars %}
+
+  <div class="col-md-6 col-lg-6 col-sm-12">
+    <div class="card py-1  my-3"> 
+      <div class="card-body">
+        <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{sold_car.get_absolute_url}}">{{sold_car.car_make}} ,{{sold_car.car_name}} </a> </h5>
+        <ul class="list-unstyled">
+          <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-light fst-italic  ml-3">{{sold_car.stock_id}}</span></li>
+           
+                <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{sold_car.price}}</span></li>
+             
+                <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{sold_car.mileage}}</span></li>
+    
+     <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light text-info fs-6 fw-bold ml-3">{{sold_car.status}}</span></li>
+  
+  </ul>
+
+  
+  
+     {% if sold_car.status == 'SOLD' %}
+  
+  <a href="" class="btn btn-sm btn-outline-secondary"> View Buyer</a>
+  {%endif  %}
+  
+  </div>
+  </div>
+  </div>
+ 
+{% empty %}
+<div class="col-md-12">
+  <div class="card py-1  my-3"> 
+    <div class="card-body text-center">
+   
+      <p class="card-text"> You Have Not Sold Any Car !</p>
+      
+    </div>
+  </div>
+  </div>
+{% endfor %}
+</div> </div>
+    </div>
+
+
+
+    <div class="tab-pane fade" id="nav-not_sold" role="tabpanel" aria-labelledby="nav-not_sold-tab">
+      <div class="container">
+        <div class="row d-flex align-items-stretch">
+        <h3 class="text-center my-4">Not Sold Vehicles</h3>
+  
+      {% for not_sold_car in not_sold_cars %}
+
+      <div class="col-md-6 col-lg-6 col-sm-12">
+        <div class="card py-1  my-3"> 
+          <div class="card-body">
+            <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{not_sold_car.get_absolute_url}}">{{not_sold_car.car_make}} ,{{not_sold_car.car_name}} </a> </h5>
+            <ul class="list-unstyled">
+              <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-light fst-italic ml-3">{{not_sold_car.stock_id}}</span></li>
+               
+                    <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{not_sold_car.price}}</span></li>
+                 
+                    <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{not_sold_car.mileage}}</span></li>
+        
+         <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light text-danger fs-6 fw-bold ml-3">{{not_sold_car.status}}</span></li>
+      
+      </ul>
+    
+      
+      
+         {% if not_sold_car.status == 'PENDING' %}
+
+         <a href="{% url 'this_car_bids' not_sold_car.slug %}" class="btn btn-sm btn-outline-info">View Bids</a>
+         {% endif %}
+      
+      </div>
+      </div>
+      </div>
+      
+ 
+{% empty %}
+<div class="col-md-12">
+  <div class="card py-1  my-3"> 
+    <div class="card-body text-center">
+   
+      <p class="card-text"> You Have No Car That Here!</p>
+      
+    </div>
+  </div>
+  </div>
+{% endfor %}
+</div> </div>
+</div>
+
+
+
+
+
+
+
+
+
+   
+    <div class="tab-pane fade" id="nav-waiting_payment" role="tabpanel" aria-labelledby="nav-waiting_payment-tab">
+      <div class="container">
+        <div class="row d-flex align-items-stretch">
+        <h3 class="text-center my-4"> Vehicles Waiting For Payments</h3>
+      {% for waiting_payment_car in waiting_payments_cars %}
+
+
+      <div class="col-md-6 col-lg-6 col-sm-12">
+        <div class="card py-1  my-3"> 
+          <div class="card-body">
+            <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{waiting_payment_car.get_absolute_url}}">{{waiting_payment_car.car_make}} ,{{waiting_payment_car.car_name}} </a> </h5>
+            <ul class="list-unstyled">
+              <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{waiting_payment_car.stock_id}}</span></li>
+               
+                    <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{waiting_payment_car.price}}</span></li>
+                 
+                    <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{waiting_payment_car.mileage}}</span></li>
+        
+         <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light text-success fs-6 fw-bold ml-3">{{waiting_payment_car.status}}</span></li>
+      
+      </ul>
+      {% if waiting_payment_car.status == 'WAITING PAYMENT'%}
+      <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+        <a href="" class="btn btn-sm btn-outline-success">Buyer Profile </a> 
+         <a href="{% url 'reject_approval' waiting_payment_car.slug %}" class="btn btn-outline-primary">Cancel Approval</a>
+        
+        </div>
+         {% endif %}
+      
+      
+       
+      
+      </div>
+      </div>
+      </div>
+      
+      
+      
+
+{% empty %}
+<div class="col-md-12">
+  <div class="card py-1  my-3"> 
+    <div class="card-body text-center">
+   
+      <p class="card-text"> You Have No Car That Here!</p>
+      
+    </div>
+  </div>
+  </div>
+{% endfor %}
+    </div>
+  </div> </div>
+
+  </div>
+
+
+
+</div>
+
+  
+</div><!-- End bid entries list -->
+
+          
+</div>
+
+
+</section><!-- End Bid Section -->
+
+
+</main><!-- End #main -->
+
+{% endblock %}

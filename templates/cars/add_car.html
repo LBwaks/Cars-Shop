@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Add Vehicle {% endblock %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% include 'includes/profile_message.html'%}
+<h3>Add Vehicle</h3>
+<form id="add_car" method="post" enctype="multipart/form-data" action="">
+{% csrf_token %}
+ {{ form|crispy}}
+
+{% comment %} {{ImageForm.management_form}}
+{%for form in imageform %}
+{{form }}
+{%endfor%}  {% endcomment %}
+
+
+
+{% comment %} {{ imageform|crispy}}  {% endcomment %}
+<input type="submit" value="submit"/>
+</form>
+{% endblock %}

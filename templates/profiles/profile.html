@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Add Vehicle {% endblock %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+my prfile
+
+ <br>
+<p> <b>User Type</b>:{{ my_profile.user_type}}</p>
+<p> <b>Firstname</b> :{{my_profile.fname}}</p>
+<p> <b>LastName</b> :{{ my_profile.lname}}</p>
+<p> <b>Email</b>{{ my_profile.email}} </p>
+<p> <b>id/pasport</b> {{ my_profile.id_passport}}</p>
+<p> <b>Phone</b> {{ my_profile.tell}}</p>
+<p> <b>county</b> {{ my_profile.county}}</p>
+<p> <b>location</b> {{ my_profile.location_city_town}}</p>
+<p> <b>address</b> {{ my_profile.address}}</p>
+<p> <b>Photo</b> {{ my_profile.profile_photo}}</p>
+<a href="{% url 'edit_profile' my_profile.profile_uuid %}">Edit Profile</a>
+ 
+{% endblock %}

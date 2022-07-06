@@ -1,0 +1,8 @@
+{% if user.is_authenticated and not user.profile.user_type %}
+<div class="message">
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>Hello {{user.username}}!</strong> Please  <a class="alert-link" href="{% url 'add_profile' %}">Click Here </a>  To Complete Your Profile.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+</div>
+{% endif %}

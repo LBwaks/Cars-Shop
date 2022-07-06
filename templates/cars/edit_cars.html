@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %} Vehicles {% endblock %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<form method="POST" enctype="multipart/form-data" id="car_edit">
+    {% csrf_token %}
+    {{ myform.media }}
+     {{ form|crispy}}
+    
+    <div class="d-grid gap-2 col-6 mx-auto">
+      
+      <button class="btn btn-primary" >Submit</button>
+    </div>
+    </form>
+    {% if messages %}
+
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <script src="{% static 'plugins/sweetalert/sweetalert2.all.min.js' %}"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var m = "{{message}};"
+        Swal.fire('Perfect',m,'success')
+    </script>
+    {% endif%}
+    {% endfor %}
+    {% endif %}
+{% endblock %}

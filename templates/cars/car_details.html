@@ -1,0 +1,435 @@
+{% extends 'base.html' %}
+{% block title %} Vehicles {% endblock %}
+{% block content %}
+{% load static %}
+{% load hitcount_tags %}
+{% load crispy_forms_tags %}
+{% load sweetify %}
+{% load recent_vehicles%}
+{% load vehicle_categories %}
+{% sweetify %}
+
+
+
+<main id="main"> 
+
+  <br>
+  <section class="breadcrumbs">
+      
+    <div class="container">
+  
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>Vehicle Details</h2>
+        <ol>
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="{% url 'home' %}">Vehicles</a></li>
+          <li>{{car.category }} {{car.car_name}}</li>
+        </ol>
+      </div>
+  
+    </div>
+  </section><!-- Job breadcrumbs Section --> 
+  <br>
+  {% include 'includes/profile_message.html'%}
+
+  {% if messages %}
+
+{% for message in messages %}
+{% if message.tags == 'success' %}
+<script src="{% static 'plugins/sweetalert/sweetalert2.all.min.js' %}"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    var m = "{{message}};"
+    Swal.fire('Perfect',m,'success')
+</script>
+{% endif%}
+{% endfor %}
+{% endif %}
+  
+  <section class="vehicles-details" id="vehicles-details">
+          <div class="container-fluid">
+             <div class="row ">
+                 
+                <div class="col-lg-8">
+                  <div class="card car-card shadow  mb-5 bg-body rounded">
+                   <div class="details pl-2 ml-3">                   
+                   {{car.image.url}}
+                     {% for vehicle_image in car.carimages_set.all %}
+                     <img src="{{vehicle_image.image.url}}" alt="{{vehicle_image.car.car_name|truncatechars:10}}" class="img-fluid" height="250">
+                     {% endfor %}
+                      <div class="details-header mb-2">
+            
+                        <li class="fw-bold fs-4 py-1" style="list-style-type:none"> 
+                          <a href="{% url 'user_cars' car.user.username %}" class="text-reset text-decoration-none">{{car.category }} {{car.car_name}}</a>  </li>
+                      
+                      
+                      <h6 class="py-1">kshs 
+                        <span class="text-muted fs-5">{{car.price }}</span>
+                      </h6>
+
+                      <ul d-flex >
+                      <li > <i class="fa fa-user" aria-hidden="true"></i> <a href="{% url 'user_cars' car.user.username %}" class="text-reset text-decoration-none">{{car.user.username }}</a>   </li>
+                      <li > <i class="fa fa-clock" aria-hidden="true"></i> <a >{{car.created_date }}</a>  </li>
+                      </ul>
+                  </div>
+                         
+                         <div class="_p-features">
+                          <h4 class="text-center mb-2"> Description About this Vehicle: </h4>
+                          <p class=" text-center mb-3"><span class="fw-bold">Inventory Location:</span> <span class="text-muted"> {{car.vendor_county }}, {{car.vendor_location }}, {{car.vendor_address }}</span></p>
+                          <div class="row">
+                              <div class="col-lg-4 col-md-6 col-12">
+                                 <p ><span class="fw-bold">Stock ID :</span> <span class="text-muted mx-1">{{car.stock_id }}</span></p>
+                                  <p><span class="fw-bold">Plate No:</span> <span class="text-muted mx-1"> {{car.platenumber }} </span></p>
+                                  <p><span class="fw-bold">Body Type:</span> <span class="text-muted mx-1"> {{car.body_type }}</span></p>
+                                  <P><span class="fw-bold">Transmission:</span> <span class="text-muted mx-1"> {{car.transmission}} </span></P>
+                                  <p><span class="fw-bold">Drive:</span> <span class="text-muted mx-1"> {{car.drive }} </span></p>
+                                  <p><span class="fw-bold">Engine Type:</span> <span class="text-muted mx-1"> {{car.engine_type }} </span></p>
+                                  <p><span class="fw-bold">Consumption:</span> <span class="text-muted mx-1">{{car.engine_size }} </span></p>
+                                 
+                                 </div>
+                                 <div class="col-lg-4 col-md-6 col-12">
+                                     <p><span class="fw-bold">Fuel:</span> <span class="text-muted mx-1"> {{car.fuel }} </span></p>
+                                     <p><span class="fw-bold">Year.of.Man: </span> <span class="text-muted mx-1">{{car.year_of_make }} </span></p>
+                                     <p><span class="fw-bold">Color:</span> <span class="text-muted mx-1"> {{car.color}} </span></p>
+                                     <p><span class="fw-bold">Milage:</span> <span class="text-muted mx-1"> {{car.mileage }} kms </span></p>
+                                     <p><span class="fw-bold">Steering:</span> <span class="text-muted mx-1"> {{car.steering }}</span></p>
+                                     <p><span class="fw-bold">Ownership:</span> <span class="text-muted mx-1">{{car.number_of_ownership }} </span></p>
+                                     <p><span class="fw-bold">Status:</span> <span class="text-muted mx-1"> <button type="button"  class="btn btn-info  m-1 p-1" style="background-color">{{car.status }}</button> </span></p>
+
+                                     
+                                 </div>
+                                 <div class="col-lg-4 col-md-6 col-12">
+                                     <span>Other Specs</span>
+                                     <p><span class="fw-bold">Vehicle Weight:</span> <span class="text-muted mx-1">  {{car.vehicle_weight }} kgs </span></p>
+                                     <p><span class="fw-bold">Max Loading:</span> <span class="text-muted mx-1">{{car.max_load_capacity }} </span></p>
+                                     <p><span class="fw-bold">Body length:</span> <span class="text-muted mx-1"> {{car.body_length }} m </span></p>
+                                     <p><span class="fw-bold">Chasis No:</span> <span class="text-muted mx-1">{{car.chasis_number }}</span></p>
+                                     views : {% get_hit_count for car %}
+                                     
+                                 </div>
+                          </div>
+                          <div class="row">
+                            <h4 class="text-center">Imperfections</h4>
+                            <p class="text-muted">{{car.imperfection }}</p>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                  <h4 class="text-center">Other Accessories</h4>
+                              </div>
+
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button"  class="btn  m-1 p-1" style="background-color:beige">Air bag 
+                                  {% if car.air_bag%}
+                                 <i class="fa fa-check text-success" aria-hidden="true"></i>
+                                 {% else %}
+                                 <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                              {% endif %}
+                              </button>
+                               </div> 
+
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" 
+                                class="btn  m-1 p-1" style="background-color:beige">Sun Roof 
+                                {% if car.sun_roof %}
+                                <i class="fa fa-check ml-2" aria-hidden="true"></i>
+                              {% else %}
+                              <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                              {%endif%}
+                              </button>
+                                   </div>
+
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" style="background-color:beige">Grill Guard 
+                                  {% if car.grill_guard %}
+                                  <i class="fa fa-check ml-4 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                  </button>
+                                </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" style="background-color:beige">Power Steering
+                                  
+                                  {% if car.power_steerring %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                
+                                </button>
+                                 </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" >Navigation
+                                  {% if car.navigation %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                
+                                
+                                </button>
+                                </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" >Rear Spoiler 
+                                  {% if car.rear_spoiler %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                  
+                                  </button>
+                                
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-6">
+                              <button type="button" class="btn  m-1 p-1" style="background-color:beige">Power Windows
+                                {% if car.power_windows %}
+                                <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                {% else %}
+                                <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                {%endif%}
+                                
+                                </button>
+                              </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" style="background-color:beige">Leather Seats
+                                  {% if car.leather_seats %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                  </i></button>
+                                 
+                              </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" style="background-color:beige">Roof Rails
+                                  {% if car.roof_rails %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                  </i></button>
+                                 
+                              </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" style="background-color:beige">Dual Airbags
+                                  {% if car.dual_air_bags %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                  </i></button>
+                                 
+                              </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" style="background-color:beige">Fog Lights
+                                  {% if car.fog_lights %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                  </i></button>
+                                 
+                              </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" style="background-color:beige">Back Tire
+                                  {% if car.back_tire %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                  </i></button>
+                                 
+                              </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" style="background-color:beige">Alloy Wheels
+                                  {% if car.alloy_wheels %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                  </i></button>
+                                 
+                              </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" style="background-color:beige">Air Conditioner
+                                  {% if car.air_conditioner %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                  </i></button>
+                                 
+                              </div>
+                              <div class="col-lg-3 col-md-4 col-6">
+                                <button type="button" class="btn  m-1 p-1" style="background-color:beige">Anti Lock Brake System
+                                  {% if car.anti_lock_brake_system %}
+                                  <i class="fa fa-check ml-2 text-success" aria-hidden="true"></i>
+                                  {% else %}
+                                  <i class="fa fa-times ml-2 text-danger" aria-hidden="true"></i>
+                                  {%endif%}
+                                  </i></button>
+                                 
+                              </div>
+                              
+                          </div>
+                         
+                           
+                          <div class="d-grid gap-2 my-3 d-md-flex justify-content-md-around">
+  {% if user.is_authenticated and  user.id == car.user.id %}
+ 
+
+  <a href="{% url 'delete_vehicle' car.slug %}"class="btn btn-danger me-md-2">Delete</a> <br>
+  <a href="{% url 'edit_vehicle' car.slug %}"class="btn btn-success me-md-2">Edit</a>
+  <button class="btn btn-primary me-md-2" type="button">23 BIDS</button>
+    
+  
+
+{% elif user.is_authenticated and  not user.id == car.user.id %}
+  
+  {% if fav %}
+  <a href="{% url 'add_favourite' car.slug %}" class="btn btn-sm btn-warning">Remove from Favorites</a>
+  
+  {% else %}
+  <a href="{% url 'add_favourite' car.slug %}" class="btn btn-sm btn-secondary">Add To Favorites</a>
+  
+  
+  {% endif %}
+  {%endif%}
+
+  
+  {% if user.is_authenticated and not user.id == car.user.id %}
+  <a href="{% url 'bid_car' car.id %}" class="btn btn-warning" > Bid This Vehicles</a>
+ 
+  {% elif not user.is_authenticated %}
+  <a href="{% url 'bid_car' car.id %}" class="btn btn-warning" > Bid This Vehicles</a>
+  {%endif%}
+
+</div>
+       </div>
+                   
+                
+             </div>
+            </div>
+             </div>
+
+
+               <div class="col-lg-4">
+                <div class="sidebar"> 
+                <div class="recent-Uploads">
+                  <h5 class="text-center">Recent Vehicles </h5>
+                {% recent_vehicles as vehicles %}
+                {% for vehicle in vehicles %}
+                
+      <div class="card car-card shadow  mb-1 bg-body rounded">
+        <div class="card-body ">
+          <div class="car-info">
+            
+                <li class="fw-bold fs-5 py-1" style="list-style-type:none"> <a href="" class="text-reset text-decoration-none stretched-link">{{vehicle.category}} {{vehicle.car_name}}</a>  </li>
+              
+              
+              <h6 class="py-1">kshs 
+                <span class="text-muted">{{vehicle.price}}</span>
+              </h6>
+              <div class=" d-flex justify-content-evenly flex-wrap">
+                {% comment %} <div class="d-flex justify-content-around">...</div> {% endcomment %}
+                
+                 <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.fuel}}</button>
+                 <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.transmission}}</button>
+                 <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.year_of_make}}</button>
+                 <button type="button" class="btn  m-1 p-1"style="background-color:beige">{{car.mileage}} kms</button>
+              </div>
+          </div>
+         
+         
+        </div>
+       
+        <!-- end of card -->
+       
+      </div>
+      {% empty %}
+      
+                <p class="text-muted" >No recent Vehicles</p>
+      {% endfor %}
+
+
+      <div class="card">
+        <div class="card-header">Similar Cars</div>
+        <div class="card-body">
+         
+          {% for similar_vehicle in object.get_related_vehicles_by_category %}
+          <p> Car :{{similar_vehicle.category}} {{similar_vehicle.car_name}}</p>
+          {% empty %}
+          <p>no similar car</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <!--end of recent Uploads -->
+
+ <!--start of categories -->
+    <div class="categories-list">
+   <h5 class="text-center">Vehicles Categories </h5>
+   
+        {% vehicle_categories as categories%}
+        {% for category in categories %}
+         <a  href="{{category.get_absolute_url}}" class="btn  m-1 p-1" style="background-color:beige">{{category.name}} </a>
+      
+    {% empty %}
+    <p class="text-muted" >No Categories Found</p>
+      {% endfor %}
+    <!--end of categories -->
+  </div>
+                
+              
+               </div>
+  
+               
+             </div>
+          </div>
+        </div>
+       </section>
+      
+  </main>
+
+
+
+
+
+{% comment %} <div id="paypal-button-container"></div> {% endcomment %}
+
+
+{% block scripts%}
+<script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
+<script>
+    paypal.Buttons({
+      // Sets up the transaction when a payment button is clicked
+      createOrder: (data, actions) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: '77.44' // Can also reference a variable or function
+            }
+          }]
+        });
+      },
+      // Finalize the transaction after payer approveaderal
+      onApprove: (data, actions) => {
+        return actions.order.capture().then(function(orderData) {
+          // Successful capture! For dev/demo purposes:
+          console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+          const transaction = orderData.purchase_units[0].payments.captures[0];
+          alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+          // When ready to go live, remove the alert and show a success message within this page. For example:
+          // const element = document.getElementById('paypal-button-container');
+          // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+          // Or go to another URL:  actions.redirect('thank_you.html');
+        });
+      }
+    }).render('#paypal-button-container');
+  </script>
+
+
+  
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,12 @@
+
+{% if messages %}
+
+{% for message in messages %}
+{% if message.tag=='success' %}
+<script>
+    var m = "{{message}};"
+    swal('Perfect',m,'success')
+</script>
+{% endif%}
+{% endfor %}
+{% endif %}

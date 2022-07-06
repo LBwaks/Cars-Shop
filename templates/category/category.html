@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %} Vehicles {% endblock %}
+{% block content %}
+{% load static %}
+{% load hitcount_tags %}
+{% load crispy_forms_tags %}
+
+
+           <p>the cat</p> 
+{% for car in cars %}
+<hr>
+views:{% get_hit_count for car %} <br>
+<p> <b>Car make</b> <a href="{{ car.get_absolute_url }}">{{car.category }}</a> </p>
+<p> <b>Car name</b>{{car.car_name}}</p>
+<p> <b>Body type</b>{{car.body_type }}</p>
+<p> <b>Transmission</b>{{car.transmission}}</p>
+<p> <b></b></p>
+<p> <b></b></p>
+<p> <b></b></p>
+<p> <b></b></p>
+<hr>
+{% empty %}
+<p>nnnnn</p>
+{% endfor %}
+
+{% endblock %}

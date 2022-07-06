@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %} search results {% endblock %}
+{% block content %}
+{% load static %}
+{% load hitcount_tags %}
+
+{% comment %} {% load humanize %} {% endcomment %}
+
+
+{% comment %} <hr> {% endcomment %}
+<a href="{% url 'add_vehicles'%}">Add Vehicle</a>
+{% load crispy_forms_tags %}
+
+<h3 class="sidebar-title">Search</h3>
+              <div class="sidebar-item search-form">
+ <form action="{% url 'find' %}" method="GET" >
+               {% csrf_token %}
+             
+                 <input type="search" name="q" >
+               
+                 <button type="submit">Search</button>
+               
+               </form>
+               </div>
+   <h2>Search results</h2>         
+{% for result in results %}
+<hr>
+{% comment %} views:{% get_hit_count for car %} <br> {% endcomment %}
+<p> <b>Car make</b> <a href="{{ result.get_absolute_url }}">{{result.car_make }}</a> </p>
+<p> <b>Car name</b>{{result.car_name}}</p>
+<p> <b>Body type</b>{{result.body_type }}</p>
+<p> <b>Transmission</b>{{result.transmission}}</p>
+
+<hr>
+{% empty %}
+<p> No search car</p>
+{% endfor %}
+
+{% if results %} <!---- check if there are object for pagination-->
+            <div class="blog-pagination">
+              <ul class="justify-content-center">
+              {% if results.has_previous %}
+                  <li>
+      <a  href="?page={{ results.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+        <span >&laquo;</span>
+      </a>
+    </li>    
+    {% endif %}
+
+                  {% for i in results.paginator.page_range %}
+             {% if results.number == i %}
+                <li class="active"><a href="#">{{i}}</a></li>
+                {% else %}
+                  <li ><a href="?page={{i}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{i}}</a></li>
+              {% endif %}
+              {% endfor %}
+              {% if results.has_next %}          
+              <li>
+    <a href="?page={{ results.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&raquo;</a>
+  </li> 
+  {% endif %}
+              </ul>
+              <br>
+            </div>
+
+            {% endif %}
+
+
+{% endblock %}

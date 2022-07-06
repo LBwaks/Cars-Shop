@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Add bid {% endblock %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<main id="main">
+    <br>
+    <section class="breadcrumbs">        
+      <div class="container">
+    
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Bid This Vehicle</h2>
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'home' %}">Vehicles</a></li>
+            <li><a href="{% url 'home' %}">Vehicles Details</a></li>
+            <li>Bid Car</li>
+          </ol>
+        </div>
+    
+      </div>
+    </section><!--End of breadcrumb-->
+    <br>
+<section class="add_bid">
+    <div class="container">
+        <div class="row">
+            <div class="col-10 mx-auto">
+                <div class="add_bid_form border m-3">
+                    <div class="card car-card shadow  mb-5 bg-body rounded">
+                        <div class="card-body"> 
+                    <form id="add_bid" class="mt-4 mx-4 " method="post",enctype="multipart/form-data" action="">
+                        <h5 class="text-center mb-2"> <u> Bid This Vehicle </u> </h5>
+                        {% csrf_token %}
+                         {{ form|crispy}}
+                        
+                        <div class="d-grid gap-2 my-3 d-md-flex justify-content-md-around">
+                         <input type="submit" class="btn btn-primary me-md-2" value="submit"/> 
+                        </div>  
+                        </form>
+                    </div></div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+</main>
+{% endblock %}

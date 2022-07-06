@@ -1,0 +1,540 @@
+{% extends 'base.html' %}
+{% block title %} Home {% endblock %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load hitcount_tags %}
+{% load crispy_forms_tags %}
+
+
+
+<br>
+<br>
+
+<section class="hero-area style3 bg-success">
+
+  <div class="hero-inner">
+    
+  <div class="container">
+  <div class="row">
+  <div class="col-lg-7 col-12">
+  <div class="inner-content">
+  <div class="hero-text">
+  <h1 class="wow fadeInUp" data-wow-delay=".3s">Find the Most Exciting<br> Jobs to Make a Better Life
+  </h1>
+  <p class="wow fadeInUp" data-wow-delay=".5s">Creating a beautiful job website is not
+  easy always. To make<br> your life easier, we are introducing Jobcamp template,<br> Leverage agile frameworks to provide a robust<br> synopsis for high level overviews.
+  </p>
+  <div class="button wow fadeInUp" data-wow-delay=".7s">
+  <a href="#" class="btn btn-primary">Post a Job</a>
+  <a href="#" class="btn btn-dark btn-alt">See Our Jobs</a>
+  </div>
+  </div>
+  
+  </div>
+  </div>
+  <div class="col-lg-5 offset-lg-0 col-md-8 offset-md-2 col-12">
+  <form class="home-search wow fadeInRight" action="{% url 'search' %}" method="GET" data-wow-delay=".5s">
+    {% csrf_token %}
+  {% comment %} <div class="form-group">
+  <label class="font-weight-bold text-dark">Car Make?</label>
+  <div class=" form-location">
+  <input type="text" name="car_make" class="form-control" placeholder="What are you looking for...">
+  </div>
+  </div> {% endcomment %}
+  
+  
+  <div class="form-group">
+  <label class="font-weight-bold text-dark">Locatio?</label>
+  <div class="form-location">
+  <input type="text"  name="location" class="form-control" placeholder="Where...">
+  </div>
+  </div>
+  <div class="form-group">
+    <label class="font-weight-bold text-dark">car_name?</label>
+    <div class="form-location">
+    <input type="text"  car_name class="form-control" placeholder="Where...">
+    </div>
+    </div>
+    <div class="form-group">
+      <label class="font-weight-bold text-dark">year of?</label>
+      <div class="form-location">
+      <input type="text"  name="year_of_make" class="form-control" placeholder="Where...">
+      </div>
+      </div>
+
+  <div class="form-group select-border">
+  <label class="font-weight-bold text-dark">Choose Category?</label>
+  <select class="form-control basic-select">
+  <option>All categories </option>
+  <option>Finance </option>
+  <option>Sale/Markting </option>
+  <option>Education/Training </option>
+  <option>Technologies</option>
+  <option>Art/Design</option>
+  <option>Healthcare</option>
+  </select>
+  </div>
+  <div class="button">
+  <button class="btn btn-primary" href="#"> Search </button>
+  </div>
+  </form>
+  </div>
+  </div>
+  </div>
+  </div>
+  
+  </section>
+  <br>
+<div class="main-search">
+             
+  {% comment %} <form action="{% url 'search' %}" method="GET" >
+    {% csrf_token %}
+    <div class="inner-form">                  
+   
+      <div class="input-field second-wrap">
+        <input id="search" type="search" name="car_make" placeholder="Car Make">
+      </div>
+      <div class="input-field second-wrap">
+        <input id="search" type="search" name="location" placeholder="Location">
+      </div>
+      <div class="input-field second-wrap">
+        <input id="search" type="search" name="year_of_make" placeholder="year_of_make">
+      </div>
+      <div class="input-field fourth-wrap">
+        <input id="search" type="search" name="car_name" placeholder="car _name">
+      </div>
+     
+         <div class="input-field first-wrap">
+        <div class="input-select">
+          <select data-trigger="" name="body_type">
+            <option value="Sedan">Sedan</option>
+            <option value="Pick Up">Pick Up</option>
+            <option value="Bus">Bus</option>
+            <option value="Hatchback">Hatchback</option>
+            <option value="Station Wagon">Station Wagon</option>
+            <option value="SUV">SUV</option>
+            <option value="Van">Van</option>
+            <option value="Mini Van">Mini Van</option>
+            <option value="Wagon">Wagon</option>
+            <option value="Convertible">Convertible</option>
+            <option value="Truck">Truck</option>
+            <option value="Heavy Equipment">Heavy Equipment</option>
+            <option value="Other">Other</option>
+
+            
+           
+          </select>
+        </div>
+      </div>  
+      <div class="input-field third-wrap">
+        <button class="btn-search" type="submit">Search</button>
+      </div>
+
+    </div>
+  </form> {% endcomment %}
+</div>
+<hr>
+
+            
+
+<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="skills py-5" id="skills">
+  <div class="container">
+    <!-- section title -->
+    <div class="row mb-5">
+      <div class="col d-flex flex-wrap text-uppercase justify-content-center">
+        <h1 class="font-weight-bold align-self-center mx-1">why choose</h1>
+        <h1 class="section-title--special mx-1">gujarati</h1>
+      </div>
+    </div>
+    <!-- end of section title -->
+    <div class="row">
+      <!-- single skill -->
+      <div class="col-sm-6 col-lg-3 text-center my-3">
+        <a href="" class="skills-icon p-2 rounded-circle">
+          <i class="fas fa-car fa-fw"></i>
+        </a>
+        <h6 class="text-uppercase font-weight-bold my-3">all brands</h6>
+        <div class="skills-underline"></div>
+        <p class="w-75 mx-auto text-muted">Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe, aperiam!</p>
+      </div>
+      <!-- end of single skill -->
+      <!-- single skill -->
+      <div class="col-sm-6 col-lg-3 text-center my-3">
+        <a href="" class="skills-icon p-2 rounded-circle">
+          <i class="fas fa-comments fa-fw"></i>
+        </a>
+        <h6 class="text-uppercase font-weight-bold my-3">free support</h6>
+        <div class="skills-underline"></div>
+        <p class="w-75 mx-auto text-muted">Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe, aperiam!</p>
+      </div>
+      <!-- end of single skill -->
+      <!-- single skill -->
+      <div class="col-sm-6 col-lg-3 text-center my-3">
+        <a href="" class="skills-icon p-2 rounded-circle">
+          <i class="fas fa-people-carry fa-fw"></i>
+        </a>
+        <h6 class="text-uppercase font-weight-bold my-3">caring</h6>
+        <div class="skills-underline"></div>
+        <p class="w-75 mx-auto text-muted">Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe, aperiam!</p>
+      </div>
+      <!-- end of single skill -->
+      <!-- single skill -->
+      <div class="col-sm-6 col-lg-3 text-center my-3">
+        <a href="" class="skills-icon p-2 rounded-circle">
+          <i class="fas fa-wallet fa-fw"></i>
+        </a>
+        <h6 class="text-uppercase font-weight-bold my-3">affordable</h6>
+        <div class="skills-underline"></div>
+        <p class="w-75 mx-auto text-muted">Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe, aperiam!</p>
+      </div>
+      <!-- end of single skill -->
+    </div>
+  </div>
+
+</section>
+
+<section class="cars py-5" id="cars">
+  <div class="container">
+    <!-- section title -->
+    <div class="row mb-5">
+      <div class="col d-flex flex-wrap text-uppercase justify-content-center">
+        <h1 class="font-weight-bold align-self-center mx-1">most viewed</h1>
+        <h1 class="section-title--special mx-1">cars</h1>
+      </div>
+    </div>
+    <!-- end of section title -->
+  
+    <!-- cars -->
+    <div class="row">
+      <!-- single car -->
+                      
+{% for car in most_viewed %}
+
+{% comment %} views:{% get_hit_count for car %} <br> {% endcomment %}
+     <div class="col-md-6 col-lg-3">
+      <div class="card car-card shadow  mb-5 bg-body rounded">
+
+        <img src="{% static '/img/car-3.png' %}" class="card-img-top car-img" alt="">
+        <!-- card body -->
+        <div class="card-body ">
+          <hr>
+          <div class="car-info">
+            
+                <li class="fw-bold fs-5 py-1" style="list-style-type:none"> <a href="{{ car.get_absolute_url }}" class="text-reset text-decoration-none stretched-link">{{car.category }} {{car.car_name}}</a>  </li>
+              
+              
+              <h6 class="py-1">kshs 
+                <span class="text-muted">{{car.price}}</span>
+              </h6>
+            
+          </div>
+          <div class=" d-flex justify-content-evenly flex-wrap">
+            {% comment %} <div class="d-flex justify-content-around">...</div> {% endcomment %}
+            
+             <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.fuel}}</button>
+             <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.transmission}}</button>
+             <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.year_of_make}}</button>
+             <button type="button" class="btn  m-1 p-1"style="background-color:beige">{{car.mileage}} kms</button>
+          </div>
+         
+        </div>
+       
+        <!-- end of card -->
+        
+      </div>
+    </div>
+    <!--end of single car -->
+    {% empty %}
+    <div class="card car-card shadow  mb-5 bg-body rounded">
+
+      
+      <div class="card-body ">
+        <P class="text-center"> Sorry No Vehicles Are Available Today! </P>
+      </div>
+    </div>
+{% endfor %}
+      <!--end of single car -->
+     
+
+      
+    </div>
+  </div>
+</section>
+
+
+<section class="cars py-5" id="cars">
+  <div class="container">
+    <!-- section title -->
+    <div class="row mb-5">
+      <div class="col d-flex flex-wrap text-uppercase justify-content-center">
+        <h1 class="font-weight-bold align-self-center mx-1">most recent</h1>
+        <h1 class="section-title--special mx-1">cars</h1>
+      </div>
+    </div>
+    <!-- end of section title -->
+  
+    <!-- cars -->
+    <div class="row">
+      <!-- single car -->
+                    
+{% for car in recent_cars %}
+
+{% comment %} views:{% get_hit_count for car %} <br> {% endcomment %}
+     <div class="col-md-6 col-lg-3">
+      <div class="card car-card shadow  mb-5 bg-body rounded">
+
+        <img src="{% static '/img/car-3.png' %}" class="card-img-top car-img" alt="">
+        <!-- card body -->
+        <div class="card-body ">
+          <hr>
+          <div class="car-info">
+            
+                <li class="fw-bold fs-5 py-1" style="list-style-type:none"> <a href="{{ car.get_absolute_url }}" class="text-reset text-decoration-none stretched-link">{{car.category }} {{car.car_name}}</a>  </li>
+              
+              
+              <h6 class="py-1">kshs 
+                <span class="text-muted">{{car.price}}</span>
+              </h6>
+            
+          </div>
+          <div class=" d-flex justify-content-evenly flex-wrap">
+            {% comment %} <div class="d-flex justify-content-around">...</div> {% endcomment %}
+            
+             <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.fuel}}</button>
+             <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.transmission}}</button>
+             <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.year_of_make}}</button>
+             <button type="button" class="btn  m-1 p-1"style="background-color:beige">{{car.mileage}} kms</button>
+          </div>
+         
+        </div>
+       
+        <!-- end of card -->
+       
+      </div>
+    </div>
+    <!--end of single car -->
+    {% empty %}
+    <div class="card car-card shadow  mb-5 bg-body rounded">
+
+      
+      <div class="card-body ">
+        <P class="text-center"> Sorry No Vehicles Are Available Today! </P>
+      </div>
+    </div>
+{% endfor %}
+      <!--end of single car -->
+     
+
+      
+    </div>
+  </div>
+</section>
+
+ <!-- question section -->
+ <div class="section question py-5" id="question">
+  <div class="container">
+    <div class="row">
+      <!-- single question first-->
+      <div class="col-10 mx-auto my-2 col-md-6 d-flex justify-content-between question-grey p-4">
+        <!-- first flexbox child -->
+        <a href="#" class="question-icon mr-3">
+          <i class="fas fa-search fa-fw"></i>
+        </a>
+        <!-- second flexbox child -->
+        <div class="question-text w-75">
+          <h4 class="question-title text-capitalize font-weight-bold">
+            are yo looking for a car?
+          </h4>
+          <p class="question-info">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ullam, quis!</p>
+        </div>
+      </div>
+      <!-- single question second-->
+      <div class="col-10 mx-auto my-2 col-md-6 d-flex justify-content-between question-yellow p-4">
+        <!-- first flexbox child -->
+        <a href="#" class="question-icon mr-3">
+          <i class="fas fa-dollar-sign fa-fw"></i>
+        </a>
+        <!-- second flexbox child -->
+        <div class="question-text w-75">
+          <h4 class="question-title text-capitalize font-weight-bold">
+            do you want to sell a car?
+          </h4>
+          <p class="question-info">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ullam, quis!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--end of  question section -->
+
+<section class="featured py-5" id="featured">
+  <div class="container">
+    <!-- section title -->
+    <div class="row mb-5">
+      <div class="col d-flex flex-wrap text-uppercase justify-content-center">
+        <h1 class="font-weight-bold align-self-center mx-1">featured</h1>
+        <h1 class="section-title--special mx-1">cars</h1>
+      </div>
+    </div>
+    <!-- end of section title -->
+    <div class="row">
+      <!-- featured info -->
+      <div class="col-10 mx-auto col-lg-6 featured-info my-3">
+        <!-- single item -->
+        <div class="featured-item my-3 d-flex p-2 text-capitalize align-items-baseline flex-wrap">
+          <span class="featured-icon mr-2">
+            <i class="fas fa-car"></i>
+          </span>
+          <h5 class="font-weight-bold mx-1">mercedes</h5>
+          <h5 class="mx-1">new model</h5>
+        </div>
+        <!-- end of single item -->
+        <!-- single item -->
+        <div class="featured-item my-3 d-flex p-2 text-capitalize align-items-baseline flex-wrap">
+          <span class="featured-icon mr-2">
+            <i class="fas fa-car"></i>
+          </span>
+          <h5 class="font-weight-bold mx-1">Aston Martin</h5>
+          <h5 class="mx-1">new model</h5>
+        </div>
+        <!-- end of single item -->
+        <!-- single item -->
+        <div class="featured-item my-3 d-flex p-2 text-capitalize align-items-baseline flex-wrap">
+          <span class="featured-icon mr-2">
+            <i class="fas fa-car"></i>
+          </span>
+          <h5 class="font-weight-bold mx-1">Ford</h5>
+          <h5 class="mx-1">new model</h5>
+        </div>
+        <!-- end of single item -->
+        <!-- single item -->
+        <div class="featured-item my-3 d-flex p-2 text-capitalize align-items-baseline flex-wrap">
+          <span class="featured-icon mr-2">
+            <i class="fas fa-car"></i>
+          </span>
+          <h5 class="font-weight-bold mx-1">Tesla</h5>
+          <h5 class="mx-1">new model</h5>
+        </div>
+        <!-- end of single item -->
+        <!-- single item -->
+        <div class="featured-item my-3 d-flex p-2 text-capitalize align-items-baseline flex-wrap">
+          <span class="featured-icon mr-2">
+            <i class="fas fa-car"></i>
+          </span>
+          <h5 class="font-weight-bold mx-1">Toyota</h5>
+          <h5 class="mx-1">new model</h5>
+        </div>
+        <!-- end of single item -->
+      </div>
+      <!-- featured img -->
+      <div class="col-10 mx-auto col-lg-6 featured-img align-self-center my-3">
+        <!-- img container -->
+        <div class="img-container">
+          <img src="img/aston.jpg" alt="" class="img-fluid featured-photo">
+          <a href="#" class="featured-link">
+            <i class="fas fa-search"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+  <!-- quotes section -->
+  <section class="quotes py-5 my-5" id="quotes">
+    <div class="container">
+      <!-- section title -->
+      <div class="row mb-5">
+        <div class="col d-flex flex-wrap text-uppercase justify-content-center">
+          <h1 class="font-weight-bold align-self-center mx-1">what they</h1>
+          <h1 class="section-title--special mx-1">say</h1>
+        </div>
+      </div>
+      <!-- end of section title -->
+      <div class="row">
+        <!-- single card -->
+        <div class="col-10 mx-auto my-5 col-md-6 col-lg-4">
+          <div class="card">
+            <img src="img/car-american-1.jpeg" alt="car" class="card-img-top">
+            <!-- card body -->
+            <div class="card-body text-center customer-card-body">
+              <img src="img/custs.png" class="rounded-circle customer-img" alt="customer img">
+              <div class="card-title">
+                <h5 class="customer-name text-capitalize">customer name</h5>
+              </div>
+              <h6 class="customer-job text-capitalize">customer job</h6>
+              <p class="customer-quote text-left mx-auto">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsa,
+                praesentium?
+              </p>
+              <span class="customer-icon">
+                <i class="fas fa-quote-left"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- end of single card -->
+        <!-- single card -->
+        <div class="col-10 mx-auto my-5 col-md-6 col-lg-4">
+          <div class="card">
+            <img src="img/car-american-2.jpeg" alt="car" class="card-img-top">
+            <!-- card body -->
+            <div class="card-body text-center customer-card-body">
+              <img src="img/custs.png" class="rounded-circle customer-img" alt="customer img">
+              <div class="card-title">
+                <h5 class="customer-name text-capitalize">customer name</h5>
+              </div>
+              <h6 class="customer-job text-capitalize">customer job</h6>
+              <p class="customer-quote text-left mx-auto">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsa,
+                praesentium?
+              </p>
+              <span class="customer-icon">
+                <i class="fas fa-quote-left"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- end of single card -->
+        <!-- single card -->
+        <div class="col-10 mx-auto my-5 col-md-6 col-lg-4">
+          <div class="card">
+            <img src="img/car-american-3.jpeg" alt="car" class="card-img-top">
+            <!-- card body -->
+            <div class="card-body text-center customer-card-body">
+              <img src="img/custs.png" class="rounded-circle customer-img" alt="customer img">
+            
+              <div class="card-title">
+                <h5 class="customer-name text-capitalize">customer name</h5>
+              </div>
+              <h6 class="customer-job text-capitalize">customer job</h6>
+              <p class="customer-quote text-left mx-auto">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsa,
+                praesentium?
+              </p>
+              <span class="customer-icon">
+                <i class="fas fa-quote-left"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- end of single card -->
+      </div>
+    </div>
+  </section>
+{% endblock %}

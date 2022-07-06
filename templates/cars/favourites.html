@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %} Vehicles {% endblock %}
+{% block content %}
+{% load static %}
+<h4> My Favorites </h4>
+{% for favourite_car in favourite_cars %}
+{{favourite_car.car_name}}
+{{favourite_car.price}}
+{{favourite_car.body_type}}
+{{favourite_car.color}}
+<a href="{% url 'add_favourite' favourite_car.slug %}">Remove from favpy </a>
+{% empty %}
+<p>No Favorites</p>
+{% endfor %}
+{% endblock %}

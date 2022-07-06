@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% block title %}Add Vehicle {% endblock %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+<main id="main">
+
+  <section class="breadcrumbs">        
+    <div class="container">
+  
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>My Bids</h2>
+        <ol>
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li>My Bids</li>
+        </ol>
+      </div>
+    </div>
+  </section><!--End of breadcrumb-->
+
+<section id="bid" class="bid" style="min-height:70vh;">
+  <div class="container" data-aos="fade-up">
+
+    <div class="row">
+
+      <div class="col-lg-10 mx-auto">
+        <br>
+      
+  <nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <button class="nav-link active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all" type="button" role="tab" aria-controls="nav-all" aria-selected="true">All Car Bids</button>
+      <button class="nav-link " id="nav-waiting_payment-tab" data-bs-toggle="tab" data-bs-target="#nav-waiting_payment" type="button" role="tab" aria-controls="nav-waiting_payment" aria-selected="false">Cars Bids Waiting For Payments</button>   
+      <button class="nav-link" id="nav-rejected-tab" data-bs-toggle="tab" data-bs-target="#nav-rejected" type="button" role="tab" aria-controls="nav-rejected" aria-selected="false">Approval Bids Rejected</button>
+      <button class="nav-link" id="nav-pending-tab" data-bs-toggle="tab" data-bs-target="#nav-pending" type="button" role="tab" aria-controls="nav-pending" aria-selected="false">Pending Car Bids</button>
+      <button class="nav-link" id="nav-failed-tab" data-bs-toggle="tab" data-bs-target="#nav-failed" type="button" role="tab" aria-controls="nav-failed" aria-selected="false">failed Cars</button>
+   
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show " id="nav-waiting_payment" role="tabpanel" aria-labelledby="nav-waiting_payment-tab">
+      
+      <div class="container">
+        <div class="row d-flex align-items-stretch">
+        <h3 class="text-center my-4">Car Bids Waiting For Payments</h3>
+
+{% for waiting_payment_bid in waiting_payment_bids%}
+<div class="col-md-6 col-lg-6 col-sm-12">
+  <div class="card shadow  mb-5 bg-body rounded py-1  my-3"> 
+    <div class="card-body">
+      <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{waiting_payment_bid.car.get_absolute_url}}">{{waiting_payment_bid.car.car_make}} ,{{waiting_payment_bid.car.car_name}} </a> </h5>
+      <ul class="list-unstyled">
+        <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{waiting_payment_bid.car.stock_id}}</span></li>
+         
+              <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{waiting_payment_bid.price}}</span></li>
+              {% if waiting_payment_bid.description %}  
+              <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{waiting_payment_bid.description}}</span></li>
+   {% endif%}
+   <li  class="lh-lg"><span class="fw-bold"> Bid Status : </span> <span class="fw-light text-success fs-6 fw-bold ml-3">{{waiting_payment_bid.status}}</span></li>
+
+</ul>
+<div class="d-grid gap-2 d-md-flex justify-content-md-between">
+  <a href="" class="btn btn-sm btn-outline-success">Buy Car </a> 
+   <a href="{% url 'reject_approval' waiting_payment_bid.slug %}" class="btn btn-outline-primary">Reject Bid Approval</a>
+   </div>
+
+</div>
+</div>
+</div>
+{% empty %}
+<div class="col-md-12">
+  <div class="card py-1  my-3"> 
+    <div class="card-body text-center">
+   
+      <p class="card-text"> You Have No Car Bid Waiting For Payments!</p>
+      
+    </div>
+  </div>
+  </div>
+
+
+{% endfor %}
+</div>
+</div>
+    </div>
+
+
+
+
+
+
+    <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
+       
+      <div class="container">
+        <div class="row d-flex align-items-stretch">
+        <h3 class="text-center my-4">All Bids</h3>
+      {% comment %} <h3></h3> {% endcomment %}
+{% for all_bid in all_bids%}
+
+
+<div class="col-md-6 col-lg-6 col-sm-12">
+  <div class="card shadow  mb-5 bg-body rounded py-1  my-3"> 
+    <div class="card-body">
+      <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_bid.car.get_absolute_url}}">{{all_bid.car.car_make}} ,{{all_bid.car.car_name}} </a> </h5>
+      <p><span class="fw-bold">Body Type:</span> <span class="text-muted mx-1"> {{car.body_type }}</span></p> 
+      <ul class="list-unstyled">
+        <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{all_bid.car.stock_id}}</span></li>
+         
+              <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{all_bid.price}}</span></li>
+              {% if all_bid.description %}  
+              <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{all_bid.description}}</span></li>
+   {% endif%}
+   <li  class="lh-lg"><span class="fw-bold"> Bid Status : </span> <span class="fw-light text-info fs-6 fw-bold ml-3">{{all_bid.status}}</span></li>
+
+</ul>
+{% if all_bid.status == 'WAITING PAYMENT'%}
+<div class="d-grid gap-2 d-md-flex justify-content-md-between">
+  <a href="" class="btn btn-sm btn-outline-success">Buy Car </a> 
+   <a href="{% url 'reject_approval' all_bid.slug %}" class="btn btn-outline-primary">Reject Bid Approval</a>
+   </div>
+   {% endif %}
+
+</div>
+</div>
+</div>
+
+
+
+
+{% empty %}
+<div class="col-md-12">
+  <div class="card py-1  my-3"> 
+    <div class="card-body text-center">
+   
+      <p class="card-text"> You Have No Car Bid !</p>
+      
+    </div>
+  </div>
+  </div>
+{% endfor %}
+    </div>
+  </div>
+  
+         
+            
+            {% if all_bids %} <!---- check if there are object for pagination-->
+            <nav aria-label="Page navigation ">
+              <ul class="pagination justify-content-end">
+              {% if all_bids.has_previous %}
+                  <li>
+      {% comment %} <a  href="?page={{ all_bids.previous_page_number }}">        <span >&laquo;</span>      </a> {% endcomment %}
+      <a class="page-link" href="?page={{ all_bids.previous_page_number }}" tabindex="-1" aria-disabled="true">Previous</a>
+    </li>    
+    {% endif %}
+
+                  {% for i in all_bids.paginator.page_range %}
+             {% if all_bids.number == i %}
+             <li class="page-item active" aria-current="page"> <span class="page-link">{{i}}</span> </li>
+                {% comment %} <li class="active"><a href="#">{{i}}</a></li> {% endcomment %}
+                {% else %}
+                  {% comment %} <li ><a href="?page={{i}}">{{i}}</a></li> {% endcomment %}
+                  <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+              {% endif %}
+              {% endfor %}
+              {% if all_bids.has_next %}          
+              {% comment %} <li>    <a href="?page={{ all_bids.next_page_number }}">&raquo;</a>  </li>  {% endcomment %}
+              <li class="page-item">                <a class="page-link" href="?page={{ all_bids.next_page_number }}">Next</a>              </li>
+  {% endif %}
+              </ul>
+              <br>
+            </div>
+
+            {% endif %}
+
+
+
+
+
+
+
+
+
+
+
+    <div class="tab-pane fade" id="nav-rejected" role="tabpanel" aria-labelledby="nav-rejected-tab">
+      <div class="container">
+        <div class="row d-flex align-items-stretch">
+        <h3 class="text-center my-4">Car Bids Approval You Rejected </h3>
+  
+  
+
+  {% for rejected_bid in rejected_bids %}
+
+  <div class="col-md-6 col-lg-6 col-sm-12">
+    <div class="card py-1  my-3"> 
+      <div class="card-body">
+        <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_bid.car.get_absolute_url}}">{{rejected_bid.car.car_make}} ,{{rejected_bid.car.car_name}} </a> </h5>
+        <ul class="list-unstyled">
+          <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{rejected_bid.car.stock_id}}</span></li>
+           
+                <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{rejected_bid.price}}</span></li>
+                {% if rejected_bid.description %}  
+                <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{rejected_bid.description}}</span></li>
+     {% endif%}
+     <li  class="lh-lg"><span class="fw-bold"> Bid Status : </span> <span class="fw-light text-danger fs-6 fw-bold ml-3">{{rejected_bid.status}}</span></li>
+  
+  </ul>
+  
+  </div>
+  </div>
+  </div>
+
+{% empty %}
+<div class="col-md-12">
+  <div class="card py-1  my-3"> 
+    <div class="card-body text-center">
+   
+      <p class="card-text"> You Have Not Rejected Any Car Bid Approval !</p>
+      
+    </div>
+  </div>
+  </div>
+{% endfor %}
+
+</div></div>
+    </div>
+    <div class="tab-pane fade" id="nav-pending" role="tabpanel" aria-labelledby="nav-pending-tab">
+
+      <div class="container">
+        <div class="row d-flex align-items-stretch">
+        <h3 class="text-center my-4">Pending Cars Bids</h3>
+     
+
+      {% for pending_bid in pending_bids %}
+      <div class="col-md-6 col-lg-6 col-sm-12">
+        <div class="card py-1  my-3"> 
+          <div class="card-body">
+            <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_bid.car.get_absolute_url}}">{{pending_bid.car.car_make}} ,{{pending_bid.car.car_name}} </a> </h5>
+            <ul class="list-unstyled">
+              <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{pending_bid.car.stock_id}}</span></li>
+               
+                    <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{pending_bid.price}}</span></li>
+                    {% if pending_bid.description %}  
+                    <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{pending_bid.description}}</span></li>
+         {% endif%}
+         <li  class="lh-lg"><span class="fw-bold"> Bid Status : </span> <span class="fw-light text-black-50 fs-6 fw-bold ml-3">{{pending_bid.status}}</span></li>
+      
+      </ul>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+        <a href="{% url 'edit_bid' pending_bid.slug %} " class="btn btn-sm btn-outline-warning">Edit </a> 
+         <a href="" class="btn btn-outline-danger">Delete</a>
+         </div>
+      </div>
+      </div>
+      </div>
+{% empty %}
+<div class="col-md-12">
+  <div class="card py-1  my-3"> 
+    <div class="card-body text-center">
+   
+      <p class="card-text"> You Have Not Rejected Any Car Bid Approval !</p>
+      
+    </div>
+  </div>
+  </div>
+{% endfor %}
+    </div>
+  </div>
+</div>
+
+    <div class="tab-pane fade" id="nav-failed" role="tabpanel" aria-labelledby="nav-failed-tab">
+      <h3>Fialed Bid</h3>
+      {% for failed_bid in failed_bids %}
+<p>Car Name:{{failed_bid.car_name }}</p>
+<p>Car Name:{{failed_bid.body_type }}</p>
+<p>Car Name:{{failed_bid.price }}</p>
+<p>Status{{failed_bid.status}}</p>
+
+<hr>
+{% empty %}
+<div class="col-md-12">
+  <div class="card py-1  my-3"> 
+    <div class="card-body text-center">
+   
+      <p class="card-text"> You Have Not Rejected Any Car Bid Approval !</p>
+      
+    </div>
+  </div>
+  </div>
+{% endfor %}
+    </div>
+    
+  </div>
+  </div>
+
+  
+</div><!-- End bid entries list -->
+
+          
+</div>
+
+
+</section><!-- End Bid Section -->
+
+
+</main><!-- End #main -->
+
+{% endblock %}
