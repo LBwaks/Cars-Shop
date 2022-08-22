@@ -9,32 +9,33 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+from pickle import TRUE
+from re import T
 import environ
 from pathlib import Path
+import sweetify
+import os
+from twilio.rest import Client
+from decouple import config
+import dj_database_url
+from dotenv import load_dotenv,find_dotenv
+import django_on_heroku
+
+
 
 
 env = environ.Env()
 environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xvmdhbsf*b7-s8m%*=v_nnri5ta@an%1ru^23y%7pfo28)gb*4'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,6 +63,7 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
     "debug_toolbar",
     'django_twilio',
+    'django_extensions',
 
 
 
@@ -74,14 +76,35 @@ INSTALLED_APPS = [
 ]
 
 
+sweetify.DEFAULT_OPTS={
+    'showConfirmButton':TRUE,
+    'timer':2500,
+    'allowOutsideClick':TRUE,
+    'confirmButtonText':'OK',
+}
 
-DJANGORESIZED_DEFAULT_SIZE = [1920, 1080]
-DJANGORESIZED_DEFAULT_SCALE = 0.5
+PAYPAL_RECEIVER_EMAIL ='sb-j50hn17149329@personal.example.com'
+PAYPAL_TEST =True
+
+DJANGORESIZED_DEFAULT_SIZE = [640, 480]
+# DJANGORESIZED_DEFAULT_SCALE = 0.5
 DJANGORESIZED_DEFAULT_QUALITY = 75
 DJANGORESIZED_DEFAULT_KEEP_META = True
 DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
 DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
 DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
+
+CONTENT_TYPES = ['image',]
+# 2.5MB - 2621440
+# 5MB - 5242880
+# 10MB - 10485760
+# 20MB - 20971520
+# 50MB - 5242880
+# 100MB - 104857600
+# 250MB - 214958080
+# 500MB - 429916160
+MAX_IMAGE_UPLOAD_SIZE = 5242880
+MAX_CAR_IMAGE_UPLOAD_SIZE = 10485760
 
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -103,14 +126,19 @@ CKEDITOR_CONFIGS = {
 }
 
 MIDDLEWARE = [
-     "debug_toolbar.middleware.DebugToolbarMiddleware",
+   
     'django.middleware.security.SecurityMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'csp.middleware.CSPMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',    
+    # "whitenoise.middleware.WhiteNoiseMiddleware",
+    
 ]
 INTERNAL_IPS = [
     # ...
@@ -135,6 +163,7 @@ TEMPLATES = [
             'libraries':{
                 'recent_vehicles':'Cars.templatetags.recent_vehicles',
                 'vehicle_categories':'Cars.templatetags.vehicle_categories',
+                'popular_vehicles':'Cars.templatetags.popular_vehicles',
             },
         },
     },
@@ -143,19 +172,32 @@ TEMPLATES = [
 WSGI_APPLICATION = 'MotoCar.wsgi.application'
 
 
+
+
+account_sid = 'AC9287fcbe5e65979be825a87a5b835654'
+auth_token = '40e7af4e722d4d536b3952b87ee593b9'
+client = Client(account_sid, auth_token)
+
+
+
 # client id :
 # client secret :
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'motocar',
-        'USER':'postgres',
-        'PASSWORD':'23C00K1E5',
-        'HOST':'localhost',
-    }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'motocar',
+#         'USER':'postgres',
+#         'PASSWORD':'23C00K1E5',
+#         'HOST':'localhost',
+#     }
+# }
+load_dotenv(find_dotenv())
+DATABASES ={
+    'default':
+    dj_database_url.config(default='postgres://postgres:23C00K1E5@localhost/motocar',conn_max_age=600)
 }
 # CACHES = {
 #     "default": {
@@ -197,13 +239,20 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-RECIPIENT_ADDRESS = env('RECIPIENT_ADDRESS')
-DEFAULT_FROM_EMAIL='webmaster@localhost'
+# EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_HOST = config('EMAIL_HOST', default='localhost')
+# EMAIL_PORT = 587
+EMAIL_PORT = config('EMAIL_PORT',  cast=int)
+# EMAIL_USE_TLS = True
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+# EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER',)
+# EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', )
+# RECIPIENT_ADDRESS = env('RECIPIENT_ADDRESS')
+# DEFAULT_FROM_EMAIL='webmaster@localhost'
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', )
+RECIPIENT_ADDRESS = config('RECIPIENT_ADDRESS', )
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -239,12 +288,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 import os.path
 STATIC_URL = '/static/'
 STATIC_ROOT =os.path.join(BASE_DIR / 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+# django_on_heroku.settings(locals())
 
 # media settings
 MEDIA_ROOT = os.path.join(BASE_DIR /'media')
@@ -254,3 +305,64 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+       # security settings
+
+# after https is configured 
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+
+# # content security policy
+# CSP_DEFAULT_SRC=("'self'",)
+# CSP_STYLE_SRC=("'self'",)
+# CSP_SCRIPT_SRC=("'self'",)
+# CSP_IMG_SRC=("'self'",)
+# CSP_FONT_SRC=("'self'",)
+
+# # http sttrict transport security
+# SECURE_HSTS_SECONDS = 0
+# SECURE_HSTS_INCLUDE_SUBDOMAINS =True
+# SECURE_HSTS_PRELOAD = True 
+
+# # SECURE SSL REDIRECT
+# SECURE_SSL_REDIRECT =True
+
+
+# from decouple import config
+# SECRET_KEY = config('SECRET_KEY')
+# DEBUG = config('DEBUG', default=False, cast=bool)
+# EMAIL_HOST = config('EMAIL_HOST', default='localhost')
+# EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
+# # coding: utf-8
+# from decouple import config
+# from unipath import Path
+# from dj_database_url import parse as db_url
+
+
+# BASE_DIR = Path(__file__).parent
+
+# DEBUG = config('DEBUG', default=False, cast=bool)
+# TEMPLATE_DEBUG = DEBUG
+
+# DATABASES = {
+#     'default': config(
+#         'DATABASE_URL',
+#         default='sqlite:///' + BASE_DIR.child('db.sqlite3'),
+#         cast=db_url
+#     )
+# }
+
+# TIME_ZONE = 'America/Sao_Paulo'
+# USE_L10N = True
+# USE_TZ = True
+
+# SECRET_KEY = config('SECRET_KEY')
+
+# EMAIL_HOST = config('EMAIL_HOST', default='localhost')
+# EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
+# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+# EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+# EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
+
+# # ...

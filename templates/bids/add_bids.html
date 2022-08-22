@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Add bid {% endblock %}
+{% block title %}Add Bid {% endblock %}
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
@@ -35,8 +35,15 @@
                         {% csrf_token %}
                          {{ form|crispy}}
                         
+                         {% if user.is_authenticated %}
                         <div class="d-grid gap-2 my-3 d-md-flex justify-content-md-around">
-                         <input type="submit" class="btn btn-primary me-md-2" value="submit"/> 
+                         {% if not other_bids %}
+                          <input type="submit" class="btn btn-primary me-md-2" value="submit"/> 
+                        {% else %}
+                        <button class="btn btn-warning me-md-2"> Bid Exist</button>
+                   
+                        {% endif%}
+                        {% endif %}
                         </div>  
                         </form>
                     </div></div>

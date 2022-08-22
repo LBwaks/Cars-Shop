@@ -5,4 +5,4 @@ register = template.Library()
 @register.simple_tag
 
 def recent_vehicles():
-    return Car.objects.filter().order_by('-created_date')[:5]
+    return Car.objects.select_related('user','category').filter(published=True).order_by('-created_date')[:5]

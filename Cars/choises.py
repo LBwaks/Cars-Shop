@@ -73,7 +73,8 @@ transmission_type =[
     ]
 drive_type =[
         ('4wd','4wd'),
-        ('2wd','2wd')
+        ('2wd','2wd'),
+        ('FWD','FWD'),('RWD','RWD')
     ]
 steering_type =[
         ('RHD','Right Hand Drive'),

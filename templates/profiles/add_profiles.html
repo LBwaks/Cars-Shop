@@ -3,12 +3,21 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h3>Add Profile</h3>
-<form id="add_car" method="post",enctype="multipart/form-data" action="">
+{% include 'includes/profile_message.html'%}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<br>
+
+    <h3 class="text-center py-3 fs-2">Add Profile</h3>
+    <div class="d-flex justify-content-center fw-bold text-capitalize pb-5">
+<div class="form-field col-9">
+<form id="add_car" method="post" enctype="multipart/form-data" action="">
 {% csrf_token %}
 {{ myform.media }}
 
  {{ form|crispy}}
-<input type="submit" value="submit"/>
+<input type="submit" class="btn btn-primary" value="submit"/>
 </form>
+</div>
+</div>
 {% endblock %}

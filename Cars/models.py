@@ -1,13 +1,13 @@
-from datetime import datetime
+import datetime
 from unicodedata import category
 from Cars.choises import  car_models,fuel_type,body_type,transmission_type,drive_type,steering_type
 from pyexpat import model
 from autoslug import AutoSlugField
 from django.db import models
 from  ckeditor.fields import RichTextField
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator,MinValueValidator
 from django.conf import settings
-from django.forms import CharField
+from django.forms import CharField, ValidationError
 from django.urls import reverse
 from hitcount.models import HitCountMixin
 from django.template.defaultfilters import slugify
@@ -16,6 +16,8 @@ from hitcount.settings import MODEL_HITCOUNT
 from django.contrib.auth.models import User
 import random,string
 from django.db.models.signals import pre_save 
+from django.core.exceptions import ValidationError
+from django_resized import ResizedImageField
 
 
 class Category(models.Model): 
@@ -47,7 +49,14 @@ def unique_stock_id_generator(instance):
 
 
 
+def current_year():
+        return datetime.datetime.now().year
+def only_digit(value):
+        if value.isdigit() == False:
+            raise ValidationError('Only Digits Allowed')
 
+def max_value_current_year(value):
+        return MaxValueValidator(current_year())(value)
 
 
 class Car(models.Model,HitCountMixin):
@@ -150,11 +159,7 @@ class Car(models.Model,HitCountMixin):
     ]
     
    
-    def current_year():
-        return datetime.date.today().year
-
-    # def max_value_current_year(value):
-    #     return MaxValueValidator(current_year() )(value)
+    
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=False)
     stock_id = models.CharField(blank=True,max_length=30)
@@ -173,19 +178,19 @@ class Car(models.Model,HitCountMixin):
     number_of_ownership= models.IntegerField(blank=True,null=True)
     imperfection= RichTextField(blank=True,null=True)
     platenumber= models.CharField(max_length=250)
-    vehicle_weight = models.CharField(max_length=250,blank=True,null=True)
-    max_load_capacity = models.CharField(max_length=250,blank=True,null=True)
-    body_length = models.CharField(max_length=250,blank=True,null=True)
+    vehicle_weight = models.CharField(max_length=250,blank=True,null=True,validators=[only_digit])
+    max_load_capacity = models.CharField(max_length=250,blank=True,null=True,validators=[only_digit])
+    body_length = models.CharField(max_length=250,blank=True,null=True,validators=[only_digit])
     chasis_number = models.CharField(max_length=250)
 
     vendor_county = models.CharField(choices=county, max_length= 50)
     vendor_location = models.CharField(max_length=250)
-    vendor_address = models.CharField(max_length=250)
-    year_of_make = models.PositiveIntegerField(max_length=250)
-    mileage = models.CharField(max_length=250)
-    price =models.CharField(max_length=250)
-    status = models.CharField(max_length=250,blank=True,null=True,default="PENDING")
-    is_featured = models.BooleanField(default=False)
+    # vendor_address = models.CharField(max_length=250)
+    year_of_make = models.PositiveIntegerField(default=current_year(),validators=[MinValueValidator(1984),max_value_current_year])
+    mileage = models.CharField(max_length=250,validators=[only_digit])
+    price =models.CharField(max_length=250,validators=[only_digit])
+    status = models.CharField(max_length=250,blank=True,null=True,default="NOT SOLD")
+    published = models.BooleanField(default=False)
     is_cancelled = models.BooleanField(default=False) 
     hit_count_generic =GenericRelation(MODEL_HITCOUNT,object_id_field='object_pk',related_query_name='hit_count_generic_relation')   
     created_date = models.DateTimeField(auto_now_add=True)
@@ -213,14 +218,15 @@ class Car(models.Model,HitCountMixin):
 
 
     # class Meta:
-    #     ordering = 'descending'
+        # ordering = 'descending',
     def __str__(self):
         return self.car_name
     def get_absolute_url(self):
         return reverse("vehicle_details",kwargs={'slug':self.slug})
     
-    def get_related_vehicles_by_category(self):
-        return Car.objects.filter(status='PENDING',category_id = self.category_id).exclude(pk=self.pk).order_by('-created_date')[:8]
+    # def get_related_vehicle_by_category(self):
+    #     return Car.objects.filter(category_id=self.category_id)
+    #     # .exclude(pk=self.pk).order_by('-created_date')[:8]
    
 # ,tag_id =self.tag_id
 
@@ -235,7 +241,7 @@ pre_save.connect(pre_save_stock_id,sender=Car)
 
 class CarImages(models.Model):
     car = models.ForeignKey(Car, verbose_name='Car_images',on_delete=models.CASCADE)
-    image =models.ImageField(upload_to='cars/car_images/',default='cars/car_images/car.jpeg',blank=True,null=True)
+    image =ResizedImageField(quality=90,upload_to='cars/car_images/')
     created_date = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):

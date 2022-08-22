@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
-{% block title %} Vehicles {% endblock %}
+{% block title %} Vehicle Details {% endblock %}
 {% block content %}
 {% load static %}
+{% load humanize %}
 {% load hitcount_tags %}
 {% load crispy_forms_tags %}
-{% load sweetify %}
+{% comment %} {% load sweetify %} {% endcomment %}
 {% load recent_vehicles%}
 {% load vehicle_categories %}
-{% sweetify %}
+{% comment %} {% sweetify %} {% endcomment %}
 
 
 
@@ -22,7 +23,7 @@
         <h2>Vehicle Details</h2>
         <ol>
           <li><a href="{% url 'home' %}">Home</a></li>
-          <li><a href="{% url 'home' %}">Vehicles</a></li>
+          <li><a href="{% url 'cars' %}">Vehicles</a></li>
           <li>{{car.category }} {{car.car_name}}</li>
         </ol>
       </div>
@@ -30,87 +31,122 @@
     </div>
   </section><!-- Job breadcrumbs Section --> 
   <br>
-  {% include 'includes/profile_message.html'%}
+  {% comment %} {% include 'includes/profile_message.html'%} {% endcomment %}
 
-  {% if messages %}
-
-{% for message in messages %}
-{% if message.tags == 'success' %}
-<script src="{% static 'plugins/sweetalert/sweetalert2.all.min.js' %}"></script>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    var m = "{{message}};"
-    Swal.fire('Perfect',m,'success')
-</script>
-{% endif%}
-{% endfor %}
-{% endif %}
+  
   
   <section class="vehicles-details" id="vehicles-details">
           <div class="container-fluid">
              <div class="row ">
                  
-                <div class="col-lg-8">
+                <div class="col-lg-9">
                   <div class="card car-card shadow  mb-5 bg-body rounded">
-                   <div class="details pl-2 ml-3">                   
-                   {{car.image.url}}
-                     {% for vehicle_image in car.carimages_set.all %}
-                     <img src="{{vehicle_image.image.url}}" alt="{{vehicle_image.car.car_name|truncatechars:10}}" class="img-fluid" height="250">
-                     {% endfor %}
+                   <div class="details pl-2 ml-3">  
+                    
+                    
+{% if car.carimages_set.all %}
+
+
+                    <section id="fancy">
+                      <div class="row">
+                   
+                        <div class="large-5 column">
+                          <div class="xzoom-container">
+
+                            {% for vehicle_image in car.carimages_set.all %}
+                            
+                            {% if forloop.counter == 1 %}
+                            {% comment %} <img src="{{vehicle_image.image.url}}" alt="{{vehicle_image.car.car_name|truncatechars:10}}" class="card-img-top car-img p-1" height="250"> {% endcomment %}
+                            
+                            <img class="xzoom4" id="xzoom-fancy" src="{{vehicle_image.image.url}}" xoriginal="{{vehicle_image.image.url}}" />
+                            {%endif %}
+                            <div class="xzoom-thumbs d-flex d-inline-flex">
+                              <a href="{{vehicle_image.image.url}}">
+                                <img class="xzoom-gallery4" width="80" src="{{vehicle_image.image.url}}"   >
+                              </a>
+     
+                              {% comment %} <a href="{% static '/img/car-3.png' %}"><img class="xzoom-gallery4" width="80" src="{% static '/img/car-3.png' %}" title="The description goes here"></a> {% endcomment %}
+                              
+                             </div>
+                             
+                          {% endfor %}
+                        </div>
+                        </div>
+                        <div class="large-7 column"></div>
+                      </div>
+                      </section>
+
+{% else %}
+<div class="default-image">
+  <img class="card-img-top car-img p-1" width="510" height="450" src="{% static '/img/car-3.png' %}" >
+    
+</div>
+   <hr>                        
+{% endif %}
                       <div class="details-header mb-2">
             
                         <li class="fw-bold fs-4 py-1" style="list-style-type:none"> 
-                          <a href="{% url 'user_cars' car.user.username %}" class="text-reset text-decoration-none">{{car.category }} {{car.car_name}}</a>  </li>
+                          <a href="{% url 'category' car.category.slug %}" class="text-reset text-decoration-none">{{car.category |capfirst}} {{car.car_name |capfirst}}</a>  </li>
                       
                       
                       <h6 class="py-1">kshs 
-                        <span class="text-muted fs-5">{{car.price }}</span>
+                        <span class="text-muted fs-5">{{car.price |intcomma}}</span>
                       </h6>
 
                       <ul d-flex >
-                      <li > <i class="fa fa-user" aria-hidden="true"></i> <a href="{% url 'user_cars' car.user.username %}" class="text-reset text-decoration-none">{{car.user.username }}</a>   </li>
+                      <li > <i class="fa fa-user" aria-hidden="true"></i> <a href="{% url 'user_cars' car.user.username %}" class="text-reset text-decoration-none">{{car.user.username |capfirst}}</a>   </li>
                       <li > <i class="fa fa-clock" aria-hidden="true"></i> <a >{{car.created_date }}</a>  </li>
                       </ul>
                   </div>
                          
                          <div class="_p-features">
                           <h4 class="text-center mb-2"> Description About this Vehicle: </h4>
-                          <p class=" text-center mb-3"><span class="fw-bold">Inventory Location:</span> <span class="text-muted"> {{car.vendor_county }}, {{car.vendor_location }}, {{car.vendor_address }}</span></p>
+                          <p class=" text-center mb-3"><span class="fw-bold">Inventory Location:</span> <span class="text-muted"> {{car.vendor_county |capfirst}}, {{car.vendor_location |capfirst }}</span></p>
                           <div class="row">
                               <div class="col-lg-4 col-md-6 col-12">
                                  <p ><span class="fw-bold">Stock ID :</span> <span class="text-muted mx-1">{{car.stock_id }}</span></p>
-                                  <p><span class="fw-bold">Plate No:</span> <span class="text-muted mx-1"> {{car.platenumber }} </span></p>
-                                  <p><span class="fw-bold">Body Type:</span> <span class="text-muted mx-1"> {{car.body_type }}</span></p>
-                                  <P><span class="fw-bold">Transmission:</span> <span class="text-muted mx-1"> {{car.transmission}} </span></P>
-                                  <p><span class="fw-bold">Drive:</span> <span class="text-muted mx-1"> {{car.drive }} </span></p>
-                                  <p><span class="fw-bold">Engine Type:</span> <span class="text-muted mx-1"> {{car.engine_type }} </span></p>
-                                  <p><span class="fw-bold">Consumption:</span> <span class="text-muted mx-1">{{car.engine_size }} </span></p>
+                                  <p><span class="fw-bold">Plate No:</span> <span class="text-muted mx-1"> {{car.platenumber|upper }} </span></p>
+                                  <p><span class="fw-bold">Body Type:</span> <span class="text-muted mx-1"> {{car.body_type |capfirst }}</span></p>
+                                  <P><span class="fw-bold">Transmission:</span> <span class="text-muted mx-1"> {{car.transmission |capfirst}} </span></P>
+                                  <p><span class="fw-bold">Drive:</span> <span class="text-muted mx-1"> {{car.drive |capfirst }} </span></p>
+                                  <p><span class="fw-bold">Engine Type:</span> <span class="text-muted mx-1"> {{car.engine_type |capfirst }} </span></p>
+                                  <p><span class="fw-bold">Consumption:</span> <span class="text-muted mx-1">{{car.engine_size |capfirst }} </span></p>
                                  
                                  </div>
                                  <div class="col-lg-4 col-md-6 col-12">
-                                     <p><span class="fw-bold">Fuel:</span> <span class="text-muted mx-1"> {{car.fuel }} </span></p>
+                                     <p><span class="fw-bold">Fuel:</span> <span class="text-muted mx-1"> {{car.fuel |capfirst }} </span></p>
                                      <p><span class="fw-bold">Year.of.Man: </span> <span class="text-muted mx-1">{{car.year_of_make }} </span></p>
-                                     <p><span class="fw-bold">Color:</span> <span class="text-muted mx-1"> {{car.color}} </span></p>
-                                     <p><span class="fw-bold">Milage:</span> <span class="text-muted mx-1"> {{car.mileage }} kms </span></p>
+                                     <p><span class="fw-bold">Color:</span> <span class="text-muted mx-1"> {{car.color |capfirst}} </span></p>
+                                     <p><span class="fw-bold">Milage:</span> <span class="text-muted mx-1"> {{car.mileage |intcomma }} kms </span></p>
                                      <p><span class="fw-bold">Steering:</span> <span class="text-muted mx-1"> {{car.steering }}</span></p>
+                                     {%if car.number_of_ownership %}
                                      <p><span class="fw-bold">Ownership:</span> <span class="text-muted mx-1">{{car.number_of_ownership }} </span></p>
-                                     <p><span class="fw-bold">Status:</span> <span class="text-muted mx-1"> <button type="button"  class="btn btn-info  m-1 p-1" style="background-color">{{car.status }}</button> </span></p>
+                                     {% endif %}
+                                     <p><span class="fw-bold">Status:</span> <span class="text-muted mx-1"> <button   class="btn btn-info  m-1 p-1" style="background-color">{{car.status }}</button> </span></p>
 
                                      
                                  </div>
                                  <div class="col-lg-4 col-md-6 col-12">
                                      <span>Other Specs</span>
+                                     {% if car.vehicle_weight %}
                                      <p><span class="fw-bold">Vehicle Weight:</span> <span class="text-muted mx-1">  {{car.vehicle_weight }} kgs </span></p>
-                                     <p><span class="fw-bold">Max Loading:</span> <span class="text-muted mx-1">{{car.max_load_capacity }} </span></p>
-                                     <p><span class="fw-bold">Body length:</span> <span class="text-muted mx-1"> {{car.body_length }} m </span></p>
+                                     {% endif %}
+                                     {%if car.max_load_capacity  %}
+                                     <p><span class="fw-bold">Max Loading:</span> <span class="text-muted mx-1">{{car.max_load_capacity }} kgs </span></p>
+                                     {% endif %}
+                                     {% if car.body_length %}
+                                     <p><span class="fw-bold">Body length:</span> <span class="text-muted mx-1"> {{car.body_length }} metres </span></p>
+                                     {% endif %}
                                      <p><span class="fw-bold">Chasis No:</span> <span class="text-muted mx-1">{{car.chasis_number }}</span></p>
-                                     views : {% get_hit_count for car %}
+                                     {% comment %} views : {% get_hit_count for car %} {% endcomment %}
                                      
                                  </div>
                           </div>
                           <div class="row">
                             <h4 class="text-center">Imperfections</h4>
-                            <p class="text-muted">{{car.imperfection }}</p>
+                            {% comment %} {% autoescape on %} {% endcomment %}
+                            <p class="text-muted">{{car.imperfection |capfirst|safe}} </p>
+                            {% comment %} {% endautoescape %} {% endcomment %}
                           </div>
                           <div class="row">
                               <div class="col-12">
@@ -277,20 +313,25 @@
                           <div class="d-grid gap-2 my-3 d-md-flex justify-content-md-around">
   {% if user.is_authenticated and  user.id == car.user.id %}
  
-
-  <a href="{% url 'delete_vehicle' car.slug %}"class="btn btn-danger me-md-2">Delete</a> <br>
+{% comment %} {% if car.car.count > 0 %} {% endcomment %}
+  <a href="{% url 'delete_vehicle' car.slug %}"class="btn btn-danger me-md-2">Delete</a> 
+  {% comment %} {% endif %} {% endcomment %}
   <a href="{% url 'edit_vehicle' car.slug %}"class="btn btn-success me-md-2">Edit</a>
-  <button class="btn btn-primary me-md-2" type="button">23 BIDS</button>
-    
+  {% if car.status != 'WAITING PAYMENT' %}
+  <a href="{% url 'this_car_bids' car.slug %}" class="btn btn-secondary"><span class="badge rounded-pill bg-info text-dark"> {{ car.car.count}}</span>  Bids</a></li>
   
+  {% else %}
+  <a href="{% url 'this_car_bids' car.slug %}" class="btn btn-secondary"> Waiting For Payment </a></li>
+  
+  {% endif %}
 
 {% elif user.is_authenticated and  not user.id == car.user.id %}
   
   {% if fav %}
-  <a href="{% url 'add_favourite' car.slug %}" class="btn btn-sm btn-warning">Remove from Favorites</a>
+  <a href="{% url 'add_favourite' car.slug %}" class="btn btn-sm btn-secondary">Remove From Bookmarked</a>
   
   {% else %}
-  <a href="{% url 'add_favourite' car.slug %}" class="btn btn-sm btn-secondary">Add To Favorites</a>
+  <a href="{% url 'add_favourite' car.slug %}" class="btn btn-sm btn-secondary">Bookmark</a>
   
   
   {% endif %}
@@ -298,13 +339,23 @@
 
   
   {% if user.is_authenticated and not user.id == car.user.id %}
-  <a href="{% url 'bid_car' car.id %}" class="btn btn-warning" > Bid This Vehicles</a>
- 
-  {% elif not user.is_authenticated %}
-  <a href="{% url 'bid_car' car.id %}" class="btn btn-warning" > Bid This Vehicles</a>
-  {%endif%}
+  {% if existing_bid %}
+  <button  class="btn btn-warning" > Bid Exist</button>
+  {% else %} 
+  <a href="{% url 'bid_car' car.id %}" class="btn btn-primary" > Bid This Vehicles</a>
+  {% endif%}
 
+  {% elif not user.is_authenticated %}
+  <a href="{% url 'bid_car' car.id %}" class="btn btn-primary" > Bid This Vehicles</a>
+  {%endif%}
+  
 </div>
+
+
+
+
+
+
        </div>
                    
                 
@@ -313,7 +364,7 @@
              </div>
 
 
-               <div class="col-lg-4">
+               <div class="col-lg-3">
                 <div class="sidebar"> 
                 <div class="recent-Uploads">
                   <h5 class="text-center">Recent Vehicles </h5>
@@ -324,19 +375,19 @@
         <div class="card-body ">
           <div class="car-info">
             
-                <li class="fw-bold fs-5 py-1" style="list-style-type:none"> <a href="" class="text-reset text-decoration-none stretched-link">{{vehicle.category}} {{vehicle.car_name}}</a>  </li>
+                <li class="fw-bold fs-5 py-1" style="list-style-type:none"> <a href="{{ vehicle.get_absolute_url}}" class="text-reset text-decoration-none stretched-link">{{vehicle.category}} {{vehicle.car_name}}</a>  </li>
               
               
               <h6 class="py-1">kshs 
-                <span class="text-muted">{{vehicle.price}}</span>
+                <span class="text-muted">{{vehicle.price |intcomma}}</span>
               </h6>
               <div class=" d-flex justify-content-evenly flex-wrap">
                 {% comment %} <div class="d-flex justify-content-around">...</div> {% endcomment %}
                 
-                 <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.fuel}}</button>
-                 <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.transmission}}</button>
-                 <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.year_of_make}}</button>
-                 <button type="button" class="btn  m-1 p-1"style="background-color:beige">{{car.mileage}} kms</button>
+                 <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{vehicle.fuel}}</button>
+                 <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{vehicle.transmission}}</button>
+                 <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{vehicle.year_of_make}}</button>
+                 {% comment %} <button type="button" class="btn  m-1 p-1"style="background-color:beige">{{car.mileage}} kms</button> {% endcomment %}
               </div>
           </div>
          
@@ -352,17 +403,7 @@
       {% endfor %}
 
 
-      <div class="card">
-        <div class="card-header">Similar Cars</div>
-        <div class="card-body">
-         
-          {% for similar_vehicle in object.get_related_vehicles_by_category %}
-          <p> Car :{{similar_vehicle.category}} {{similar_vehicle.car_name}}</p>
-          {% empty %}
-          <p>no similar car</p>
-          {% endfor %}
-        </div>
-      </div>
+      
     </div>
     <!--end of recent Uploads -->
 
@@ -372,7 +413,7 @@
    
         {% vehicle_categories as categories%}
         {% for category in categories %}
-         <a  href="{{category.get_absolute_url}}" class="btn  m-1 p-1" style="background-color:beige">{{category.name}} </a>
+         <a  href="{{category.get_absolute_url}}" class="btn  m-1 p-1" style="background-color:beige">{{category.name}} <span class="badge rounded-pill bg-dark text-light"> {{ category.category_count}}</span> </a>
       
     {% empty %}
     <p class="text-muted" >No Categories Found</p>
@@ -395,41 +436,9 @@
 
 
 
-{% comment %} <div id="paypal-button-container"></div> {% endcomment %}
 
 
-{% block scripts%}
-<script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
-<script>
-    paypal.Buttons({
-      // Sets up the transaction when a payment button is clicked
-      createOrder: (data, actions) => {
-        return actions.order.create({
-          purchase_units: [{
-            amount: {
-              value: '77.44' // Can also reference a variable or function
-            }
-          }]
-        });
-      },
-      // Finalize the transaction after payer approveaderal
-      onApprove: (data, actions) => {
-        return actions.order.capture().then(function(orderData) {
-          // Successful capture! For dev/demo purposes:
-          console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
-          const transaction = orderData.purchase_units[0].payments.captures[0];
-          alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
-          // When ready to go live, remove the alert and show a success message within this page. For example:
-          // const element = document.getElementById('paypal-button-container');
-          // element.innerHTML = '<h3>Thank you for your payment!</h3>';
-          // Or go to another URL:  actions.redirect('thank_you.html');
-        });
-      }
-    }).render('#paypal-button-container');
-  </script>
 
 
-  
-{% endblock %}
 
 {% endblock %}

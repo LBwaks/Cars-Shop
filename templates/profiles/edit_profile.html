@@ -1,15 +1,36 @@
 {% extends 'base.html' %}
-{% block title %}Add Vehicle {% endblock %}
+{% block title %}Edit Profile {% endblock %}
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<br>
-<h3>Add Profile</h3>
+{% include 'includes/profile_message.html'%}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<main id="main">
+
+    <section class="breadcrumbs">        
+      <div class="container">
+    
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Edit Bid</h2>
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li>Edit Bid</li>
+          </ol>
+        </div>
+      </div>
+    </section><!--End of breadcrumb-->
+    <br>
+    <h3 class="text-center py-3 fs-2">Edit Profile</h3>
+    <div class="d-flex justify-content-center fw-bold text-capitalize pb-5">
+<div class="form-field col-9">
 <form id="add_car" method="post",enctype="multipart/form-data" action="">
 {% csrf_token %}
 {{ myform.media }}
 
  {{ form|crispy}}
-<input type="submit" value="submit"/>
+<input type="submit" class="btn btn-primary" value="submit"/>
 </form>
+</div>
+</div>
 {% endblock %}

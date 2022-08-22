@@ -7,11 +7,11 @@ from phonenumber_field.modelfields import PhoneNumberField
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields=('user_type','fname','lname','email',
-        'id_passport','tell','county','address',
-        'location_city_town','address','profile_photo')
+        fields=('fname','lname','email',
+        'id_passport','tell','county',
+        'location_city_town','profile_photo')
         labels ={
-            'user_type':'Type Of The User :' ,
+            # 'user_type':'Type Of The User :' ,
             'fname': 'Firstname',
             'lname':'LastName' ,
             'email':'Email' ,
@@ -19,19 +19,19 @@ class ProfileForm(forms.ModelForm):
             'tell': 'Phonenumber:',
             'county': 'County:',            
             'location_city_town':'Location /Town/ City' ,
-            'address':'Address:' ,
+            
             'profile_photo':'Profile Photo',
         }
         widgets = {
-            'user_type':forms.Select(attrs={'class':'form-select'}),
-            'fname': forms.TextInput(attrs={'class':'form-control fname''required'}),
-            'lname':forms.TextInput(attrs={'class':'form-control''required'}),
-            'email':forms.EmailInput(attrs={'class':'form-control''required'}),
-            'id_passport':forms.TextInput(attrs={'class':'class-control' 'required'}) ,
+            # 'user_type':forms.Select(attrs={'class':'form-select'}),
+            'fname': forms.TextInput(attrs={'required''class':'form-control fname','placeholder':'eg John'}),
+            'lname':forms.TextInput(attrs={'required''class':'form-control','placeholder':'eg Doe'}),
+            'email':forms.EmailInput(attrs={'required''class':'form-control','placeholder':'eg johndoe@gmail.com'}),
+            'id_passport':forms.TextInput(attrs={'required''class':'class-control','placeholder':'eg AB123456' }) ,
             # 'tell': PhoneNumberField(),
-            'county': forms.Select(attrs={'class':'form-select'}),           
-            'location_city_town':forms.TextInput(attrs={'class':'form-control''required'}),
-            'address':forms.TextInput(attrs={'class':'form-control''required'}),
+            'county': forms.Select(attrs={'class':'form-select','placeholder':'eg Nairobi'}),           
+            'location_city_town':forms.TextInput(attrs={'required''class':'form-control','placeholder':'eg Starehe'}),
+          
             'profile_photo': forms.ClearableFileInput(attrs={'class':'form-control image '}),
         }
 
@@ -43,7 +43,7 @@ def clean(self):
     id_passport =cleaned_data.get('id_passport')
     tell =cleaned_data.get('tell')
     location=cleaned_data.get('location_city_town')
-    address =cleaned_data.get('address')
+ 
 
     if len(fname)<3:
         raise forms.ValidationError('First Name should have a minimum of 3 characters')
@@ -59,14 +59,7 @@ def clean(self):
     if len(location)<3:
             raise forms.ValidationError('Location Town Or City should have a minimum of 3 characters')
 
-    if len(address)<3:
-            raise forms.ValidationError('Address should have a minimum of 3 characters')
-
-    # if len()<3:
-    #         raise forms.ValidationError('should have a minimum of 3 characters')
-
-    # if len()<3:
-    #         raise forms.ValidationError('should have a minimum of 3 characters')
+    
    
     return self.cleaned_data
     
@@ -74,11 +67,11 @@ def clean(self):
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields=('user_type','fname','lname','email',
-        'id_passport','tell','county','address',
-        'location_city_town','address','profile_photo')
+        fields=('fname','lname','email',
+        'id_passport','tell','county',
+        'location_city_town','profile_photo')
         labels ={
-            'user_type':'Type Of The User :' ,
+            # 'user_type':'Type Of The User :' ,
             'fname': 'Firstname',
             'lname':'LastName' ,
             'email':'Email' ,
@@ -86,19 +79,19 @@ class EditProfileForm(forms.ModelForm):
             'tell': 'Phonenumber:',
             'county': 'County:',            
             'location_city_town':'Location /Town/ City' ,
-            'address':'Address:' ,
+          
             'profile_photo':'Profile Photo',
         }
         widgets = {
-            'user_type':forms.Select(attrs={'class':'form-select'}),
-            'fname': forms.TextInput(attrs={'class':'form-control fname''required'}),
-            'lname':forms.TextInput(attrs={'class':'form-control''required'}),
-            'email':forms.EmailInput(attrs={'class':'form-control''required'}),
-            'id_passport':forms.TextInput(attrs={'class':'class-control' 'required'}) ,
+            # 'user_type':forms.Select(attrs={'class':'form-select'}),
+            'fname': forms.TextInput(attrs={'required''class':'form-control fname','placeholder':'eg John'}),
+            'lname':forms.TextInput(attrs={'required''class':'form-control','placeholder':'eg Doe'}),
+            'email':forms.EmailInput(attrs={'required''class':'form-control','placeholder':'eg johndoe@gmail.com'}),
+            'id_passport':forms.TextInput(attrs={'required''class':'class-control','placeholder':'eg AB123456' }) ,
             # 'tell': PhoneNumberField(),
-            'county': forms.Select(attrs={'class':'form-select'}),           
-            'location_city_town':forms.TextInput(attrs={'class':'form-control''required'}),
-            'address':forms.TextInput(attrs={'class':'form-control''required'}),            
+            'county': forms.Select(attrs={'class':'form-select','placeholder':'eg Nairobi'}),           
+            'location_city_town':forms.TextInput(attrs={'required''class':'form-control','placeholder':'eg Starehe'}),
+            
             'profile_photo': forms.ClearableFileInput(attrs={'class':'form-control image '}),
         }
 
@@ -110,7 +103,7 @@ def clean(self):
     id_passport =cleaned_data.get('id_passport')
     tell =cleaned_data.get('tell')
     location=cleaned_data.get('location_city_town')
-    address =cleaned_data.get('address')
+
 
     if len(fname)<3:
         raise forms.ValidationError('First Name should have a minimum of 3 characters')
@@ -126,13 +119,6 @@ def clean(self):
     if len(location)<3:
             raise forms.ValidationError('Location Town Or City should have a minimum of 3 characters')
 
-    if len(address)<3:
-            raise forms.ValidationError('Address should have a minimum of 3 characters')
-
-    # if len()<3:
-    #         raise forms.ValidationError('should have a minimum of 3 characters')
-
-    # if len()<3:
-    #         raise forms.ValidationError('should have a minimum of 3 characters')
+    
    
     return self.cleaned_data

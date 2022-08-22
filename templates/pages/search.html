@@ -1,69 +1,146 @@
 {% extends 'base.html' %}
-{% block title %} search results {% endblock %}
+{% block title %} Search Results {% endblock %}
 {% block content %}
 {% load static %}
 {% load hitcount_tags %}
+{% load humanize %}
 
-{% comment %} {% load humanize %} {% endcomment %}
 
 
-{% comment %} <hr> {% endcomment %}
-<a href="{% url 'add_vehicles'%}">Add Vehicle</a>
-{% load crispy_forms_tags %}
+<main id="main"> 
+  <br>
+  
 
-<h3 class="sidebar-title">Search</h3>
-              <div class="sidebar-item search-form">
- <form action="{% url 'find' %}" method="GET" >
-               {% csrf_token %}
-             
-                 <input type="search" name="q" >
-               
-                 <button type="submit">Search</button>
-               
-               </form>
+<section class="breadcrumbs">
+    
+  <div class="container">
+
+    <div class="d-flex justify-content-between align-items-center">
+      <h2>Vehicles</h2>
+      <ol>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li>Search Results</li>
+      </ol>
+    </div>
+
+  </div>
+</section><!-- Job breadcrumbs Section --> 
+<br>
+{% include 'includes/profile_message.html'%}
+
+<section class="vehicles" id="vehicles">
+    <div class="container-fluid">
+        <div class="row">
+
+          <div class="col-12">
+
+            <div class="row">
+           
+
+    {% comment %} main {% endcomment %}
+     <!-- single car -->
+
+                 
+     {% for result in results %}
+
+     {% comment %} views:{% get_hit_count for car %} <br> {% endcomment %}
+     {% comment %} <div class="container">
+      <div class="row"> {% endcomment %}
+        <div class="col-md-6 col-lg-3 pt-2">
+            <div class="card car-card shadow  mb-5 bg-body rounded">
+              {% if car.carimages_set.all %} 
+
+              {% for vehicle_image in car.carimages_set.all %}
+              {% if forloop.counter == 1 %}
+              <img src="{{vehicle_image.image.url}}" alt="{{vehicle_image.car.car_name|truncatechars:10}}" class="card-img-top car-img p-1" height="150">
+              {%endif %}
+              {% endfor %}
+              {% else %}
+              <img src="{% static '/img/car-3.png' %}" alt="{{car.car_name|truncatechars:10}}" class="card-img-top car-img p-1" height="150">
+        
+        {% endif %} 
+               <!-- card body -->
+               <div class="card-body ">
+                 <hr>
+                 <div class="car-info">
+                   
+                       <li class="fw-bold fs-5 py-1" style="list-style-type:none"> <a href="{{ result.get_absolute_url }}" class="text-reset text-decoration-none stretched-link">{{result.category }} {{result.car_name}}</a>  </li>
+                     
+                     
+                     <h6 class="py-1">kshs 
+                       <span class="text-muted">{{result.price|intcomma}}</span>
+                     </h6>
+                   
+                 </div>
+                 <div class=" d-flex justify-content-evenly flex-wrap">
+        
+                    <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{result.transmission}}</button>
+                    <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{result.year_of_make}}</button>
+                    <button type="button" class="btn  m-1 p-1"style="background-color:beige">{{result.mileage|intcomma}} kms</button>
+                 </div>
+                
                </div>
-   <h2>Search results</h2>         
-{% for result in results %}
-<hr>
-{% comment %} views:{% get_hit_count for car %} <br> {% endcomment %}
-<p> <b>Car make</b> <a href="{{ result.get_absolute_url }}">{{result.car_make }}</a> </p>
-<p> <b>Car name</b>{{result.car_name}}</p>
-<p> <b>Body type</b>{{result.body_type }}</p>
-<p> <b>Transmission</b>{{result.transmission}}</p>
+              
+               <!-- end of card -->
+               <div class="card-footer d-flex justify-content-around">
+                  <div class="btn-group">
+                 <a class="btn btn-warning w-100 " href="">View This Car</a>
+              {% comment %} </div>
+               </div> {% endcomment %}
+          </div>
+        </div>
+        <!--end of single car -->
+      </div>
+     
+     </div>     
+     
+         {% empty %}
+         <div class="card car-card">
+     
+           
+           <div class="card-body shadow p-3 mb-5 bg-body rounded">
+             <P class="text-center fw-bold fs-1 text-danger">Opps!!</P>
+             <P class="text-center"> Sorry No Vehicles Are Available Today! </P>
+           </div>
+         </div>
+     {% endfor %}
 
-<hr>
-{% empty %}
-<p> No search car</p>
-{% endfor %}
+            </div>
 
-{% if results %} <!---- check if there are object for pagination-->
-            <div class="blog-pagination">
-              <ul class="justify-content-center">
+            {% if results %} <!---- check if there are object for pagination-->
+            <nav aria-label="Page navigation ">
+              <ul class="pagination justify-content-end">
               {% if results.has_previous %}
                   <li>
-      <a  href="?page={{ results.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
-        <span >&laquo;</span>
-      </a>
+      {% comment %} <a  href="?page={{ results.previous_page_number }}">        <span >&laquo;</span>      </a> {% endcomment %}
+      <a class="page-link" href="?page={{ results.previous_page_number }}" tabindex="-1" aria-disabled="true">Previous</a>
     </li>    
     {% endif %}
 
                   {% for i in results.paginator.page_range %}
              {% if results.number == i %}
-                <li class="active"><a href="#">{{i}}</a></li>
+             <li class="page-item active" aria-current="page"> <span class="page-link">{{i}}</span> </li>
+                {% comment %} <li class="active"><a href="#">{{i}}</a></li> {% endcomment %}
                 {% else %}
-                  <li ><a href="?page={{i}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{i}}</a></li>
+                  {% comment %} <li ><a href="?page={{i}}">{{i}}</a></li> {% endcomment %}
+                  <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
               {% endif %}
               {% endfor %}
               {% if results.has_next %}          
-              <li>
-    <a href="?page={{ results.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&raquo;</a>
-  </li> 
+              {% comment %} <li>    <a href="?page={{ results.next_page_number }}">&raquo;</a>  </li>  {% endcomment %}
+              <li class="page-item">                <a class="page-link" href="?page={{ results.next_page_number }}">Next</a>              </li>
   {% endif %}
               </ul>
+            </nav>
               <br>
-            </div>
+            
 
             {% endif %}
 
-
+        </div>
+        
+    </div>
+    </div>
+</section>
+</main>
 {% endblock %}

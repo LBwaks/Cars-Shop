@@ -1,12 +1,155 @@
 {% extends 'base.html' %}
-{% block title %} Vehicles {% endblock %}
+{% block title %} Vehicles Per Category{% endblock %}
 {% block content %}
 {% load static %}
 {% load hitcount_tags %}
 {% load crispy_forms_tags %}
+{% load humanize %}
 
 
-           <p>the cat</p> 
+
+<main id="main"> 
+    <br>
+    
+  
+  <section class="breadcrumbs">
+      
+    <div class="container">
+  
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>Vehicle Categories</h2>
+        <ol>
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li>Vehicle Categories</li>
+        </ol>
+      </div>
+  
+    </div>
+  </section><!-- Job breadcrumbs Section --> 
+  
+  {% include 'includes/profile_message.html'%}
+  
+  <section class="vehicles" id="vehicles">
+      <div class="container-fluid">
+          <div class="row">
+  
+            <div class="col-md-12 col-sm-12">
+  
+              <div class="row">
+             
+  
+      {% comment %} main {% endcomment %}
+       <!-- single car -->
+  
+                   
+       {% for car in cars %}
+  
+  {% comment %} views:{% get_hit_count for car %} <br> {% endcomment %}
+       <div class="col-md-6 col-lg-3">
+        <div class="card car-card shadow  mb-5 bg-body rounded">
+          {% if car.carimages_set.all %} 
+
+          {% for vehicle_image in car.carimages_set.all %}
+          {% if forloop.counter == 1 %}
+          <img src="{{vehicle_image.image.url}}" alt="{{vehicle_image.car.car_name|truncatechars:10}}" class="card-img-top car-img p-1" height="150">
+          {%endif %}
+          {% endfor %}
+          {% else %}
+          <img src="{% static '/img/car-3.png' %}" alt="{{car.car_name|truncatechars:10}}" class="card-img-top car-img p-1" height="150">
+  
+  {% endif %}
+          <!-- card body -->
+          <div class="card-body ">
+            <hr>
+            <div class="car-info">
+              
+                  <li class="fw-bold fs-5 py-1" style="list-style-type:none"> <a href="{{ car.get_absolute_url }}" class="text-reset text-decoration-none stretched-link">{{car.category }} {{car.car_name}}</a>  </li>
+                
+                
+                <h6 class="py-1">kshs 
+                  <span class="text-muted">{{car.price |intcomma}}</span>
+                </h6>
+              
+            </div>
+            <div class=" d-flex justify-content-evenly flex-wrap">
+              {% comment %} <div class="d-flex justify-content-around">...</div> {% endcomment %}
+              
+               <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.fuel}}</button>
+               <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.transmission}}</button>
+               {% comment %} <button type="button" class="btn  m-1 p-1" style="background-color:beige">{{car.body_type }}</button> {% endcomment %}
+               <button type="button" class="btn  m-1 p-1"style="background-color:beige">{{car.mileage |intcomma}} kms</button>
+            </div>
+           
+          </div>
+         
+          <!-- end of card -->
+          <div class="card-footer d-flex justify-content-around">
+             <div class="btn-group">
+            <a class="btn btn-warning w-100 " href="">View This Car</a>
+         </div>
+          </div>
+        </div>
+      </div>
+      <!--end of single car -->
+      {% empty %}
+      <div class="card car-card">
+  
+        
+        <div class="card-body shadow p-3 mb-5 bg-body rounded">
+          <P class="text-center fw-bold fs-1 text-danger">Opps!!</P>
+          <P class="text-center"> Sorry No Vehicles Are Available Today! </P>
+        </div>
+      </div>
+  {% endfor %}
+  
+              </div>
+  
+              {% if cars %} <!---- check if there are object for pagination-->
+              <nav aria-label="Page navigation ">
+                <ul class="pagination justify-content-end">
+                {% if cars.has_previous %}
+                    <li>
+              
+              <a class="page-link" href="?page={{ cars.previous_page_number }}" tabindex="-1" aria-disabled="true">Previous</a>
+              </li>    
+              {% endif %}
+              
+                    {% for i in cars.paginator.page_range %}
+               {% if cars.number == i %}
+               <li class="page-item active" aria-current="page"> <span class="page-link">{{i}}</span> </li>
+                 
+                  {% else %}
+                  
+                    <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+                {% endif %}
+                {% endfor %}
+                {% if cars.has_next %}          
+              
+                <li class="page-item"> <a class="page-link" href="?page={{ cars.next_page_number }}">Next</a>  </li>
+              {% endif %}
+                </ul>
+                <br>
+              
+              
+              {% endif %}
+  
+          </div>
+  <div class="col-md-3 col-sm-6">
+          </div>
+          
+      </div>
+      </div>
+  </section>
+  </main>
+  {% endblock %}
+
+
+
+
+
+
+
+            {% comment %} <p>the cat</p> 
 {% for car in cars %}
 <hr>
 views:{% get_hit_count for car %} <br>
@@ -23,4 +166,4 @@ views:{% get_hit_count for car %} <br>
 <p>nnnnn</p>
 {% endfor %}
 
-{% endblock %}
+{% endblock %}  {% endcomment %}

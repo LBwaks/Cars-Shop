@@ -1,12 +1,27 @@
 {% extends 'base.html' %}
-{% block title %} Vehicles {% endblock %}
+{% block title %} Bid Details {% endblock %}
 {% block content %}
 {% load static %}
-bid details 
-<br>
+<main id="main">
 
+    <section class="breadcrumbs">        
+      <div class="container">
+    
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Bid Details</h2>
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li>Bid Details</li>
+          </ol>
+        </div>
+      </div>
+    </section><!--End of breadcrumb-->
+    <br>
 <p> Price : {{bid.price}}</p>
 <p>Decscription : {{bid.description}} </p>
 <a href="{% url 'edit_bid' bid.slug %}" class="btn btn-sm btn-primary">Edit</a>
 <a href="{% url 'delete_bid' bid.slug %}" class="btn btn-sm btn-danger">Delete</a>
+
+</main>
+
 {% endblock %}

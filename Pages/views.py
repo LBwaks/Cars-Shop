@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404, render
-from Cars.models import Car
+from Cars.models import Car, Category
 from Pages.forms import CarSearchForm,ContactForm
 from django .views.generic import ListView,CreateView,FormView
 from django.contrib.postgres.search import SearchVector
@@ -14,11 +14,12 @@ class HomeView(ListView):
     def get_context_data(self, **kwargs):
         context = super(HomeView,self).get_context_data(**kwargs)
        
-        recent_cars = Car.objects.filter(status='PENDING').order_by('-created_date')[:4]
-        most_viewed = Car.objects.filter(status='PENDING').order_by('hit_count_generic')[:4]
-       
+        recent_cars = Car.objects.select_related('user','category').filter(status='NOT SOLD',published=True).order_by('-created_date')[:4]
+        most_viewed = Car.objects.select_related('user','category').filter(status='NOT SOLD',published=True).order_by('hit_count_generic')[:4]
+        categories =Category.objects.all()
         context["recent_cars"] = recent_cars
         context["most_viewed"] = most_viewed
+        context['categories']=categories
        
         return context
 class ContactView(SuccessMessageMixin, CreateView):
@@ -39,9 +40,9 @@ def find(request):
         # form = JobSearchForm(request.GET)
     if request.method =='GET':            
             q=request.GET.get('q')           
-            results = Car.objects.annotate(search=SearchVector('stock_id','car_make','vendor_county','car_name','body_type','engine_size','year_of_make','mileage','price' ,'vendor_location','vendor_address','drive','transmission'),).filter(search=q).order_by('-created_date')
+            results = Car.objects.select_related('user','category').annotate(search=SearchVector('stock_id','car_make','vendor_county','car_name','body_type','engine_size','year_of_make','mileage','price' ,'vendor_location','vendor_address','drive','transmission'),).filter(published=True,search=q).order_by('-created_date')
             page=request.GET.get('page',1)
-            paginator = Paginator(results,30)
+            paginator = Paginator(results,20)
             try:
                 results =paginator.page(page)
             except PageNotAnInteger:
@@ -57,7 +58,7 @@ def search(request):
     
     if request.method == 'GET':
             
-            # tag= request.GET.get('tag',None)
+            category= request.GET.get('category',None)
             car_make=request.GET.get('car_make')
             # car_make = form.cleaned_data['car_make']
             
@@ -73,31 +74,40 @@ def search(request):
             location =request.GET.get('location ')
             # location  = form.cleaned_data['location ']
 
-            results=Car.objects.all()
+            results=Car.objects.select_related('user','category').filter(published=True)
             
-            # if tag != '0':
-            #     tag=get_object_or_404(Tag,pk=tag)            
-            #     results = results.filter(tag__name__icontains=tag.name).order_by('-created_date')
+            if category != '0':
+                category=get_object_or_404(Category,pk=category)            
+                results = results.filter(category__name__icontains=category.name,published=True ).order_by('-created_date')
                 
-            #     if title:
-            #         results = Job.objects.annotate(search=SearchVector('title'),).filter(search=title,tag__name__icontains=tag.name).order_by('-created_date')
-            #     if location:
-            #         results = Job.objects.annotate(search=SearchVector('county','location','address'),).filter(search=location,tag__name__icontains=tag.name).order_by('-created_date')
-            # else:
-            if car_make:
-                results = Car.objects.annotate(search=SearchVector('car_make'),).filter(search=car_make).order_by('-created_date')
-            if location:
-                results = Car.objects.annotate(search=SearchVector('vendor_county','vendor_location','vendor_address'),).filter(search=location).order_by('-created_date')
-            if year_of_make:
-                results = Car.objects.annotate(search=SearchVector('year_of_make'),).filter(search=year_of_make).order_by('-created_date')
+                if car_make:
+                   results = Car.objects.select_related('user','category').annotate(search=SearchVector('car_make'),).filter(published=True,search=car_make).order_by('-created_date')
+                if location:
+                    results = Car.objects.select_related('user','category').annotate(search=SearchVector('vendor_county','vendor_location','vendor_address'),).filter(published=True,search=location).order_by('-created_date')
+                if year_of_make:
+                    results = Car.objects.select_related('user','category').annotate(search=SearchVector('year_of_make'),).filter(published=True,search=year_of_make).order_by('-created_date')
 
-            if body_type:
-                results = Car.objects.annotate(search=SearchVector('body_type'),).filter(search=body_type).order_by('-created_date')
+                if body_type:
+                    results = Car.objects.select_related('user','category').annotate(search=SearchVector('body_type'),).filter(published=True,search=body_type).order_by('-created_date')
 
-            if car_name:
-                results = Car.objects.annotate(search=SearchVector('car_name'),).filter(search=car_name).order_by('-created_date')
-                    
-            # results = Job.objects.annotate(search=SearchVector('title','county','location','address','tag'),).filter(search=q).order_by('-created_date')
+                if car_name:
+                    results = Car.objects.select_related('user','category').annotate(search=SearchVector('car_name'),).filter(published=True,search=car_name).order_by('-created_date')
+                        
+            else:
+                if car_make:
+                    results = Car.objects.select_related('user','category').annotate(search=SearchVector('car_make'),).filter(published=True,search=car_make).order_by('-created_date')
+                if location:
+                    results = Car.objects.select_related('user','category').annotate(search=SearchVector('vendor_county','vendor_location','vendor_address'),).filter(published=True,search=location).order_by('-created_date')
+                if year_of_make:
+                    results = Car.objects.select_related('user','category').annotate(search=SearchVector('year_of_make'),).filter(published=True,search=year_of_make).order_by('-created_date')
+
+                if body_type:
+                    results = Car.objects.select_related('user','category').annotate(search=SearchVector('body_type'),).filter(published=True,search=body_type).order_by('-created_date')
+
+                if car_name:
+                    results = Car.objects.select_related('user','category').annotate(search=SearchVector('car_name'),).filter(published=True,search=car_name).order_by('-created_date')
+                        
+            # results = Job.objects.annotate(search=SearchVector('title','county','location','address','category'),).filter(search=q).order_by('-created_date')
             page=request.GET.get('page',1)
             paginator = Paginator(results,30)
             try:
@@ -109,4 +119,10 @@ def search(request):
             
     return render(request,'pages/search.html',{'form':form,'results':results,'car_make':car_make,
     'car_name':car_name,'body_type':body_type,'year_of_make':year_of_make,'location':location })
+
+def error_404(request,exception):
+    return render(request,'errors/404.html')
+
+def error_500(request):
+    return render(request,'errors/500.html')
  

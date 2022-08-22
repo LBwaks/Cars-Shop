@@ -3,10 +3,10 @@ from .models import Car,CarImages,Category
 from django.utils.html import format_html
 # Register your models here.
 class CarAdmin(admin.ModelAdmin):
-    list_display=('stock_id','category','car_name','vendor_county','vendor_location','vendor_address','mileage','price','status','is_featured','is_cancelled','created_date','air_bag','grill_guard','power_steerring','sun_roof','navigation',
+    list_display=('stock_id','category','car_name','vendor_county','vendor_location','mileage','price','status','published','is_cancelled','created_date','air_bag','grill_guard','power_steerring','sun_roof','navigation',
         'rear_spoiler','power_windows','leather_seats','roof_rails','dual_air_bags',
         'fog_lights','back_tire','alloy_wheels','air_conditioner','anti_lock_brake_system')
-    list_editable=('is_featured','is_cancelled')
+    list_editable=('published','is_cancelled')
     list_filter=('category','body_type','transmission','drive','engine_size','fuel','vendor_county','year_of_make')
     search_fields=('car_name','mileage','price')
 

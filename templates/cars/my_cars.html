@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
-{% block title %}Add Vehicle {% endblock %}
+{% block title %}My Vehicle {% endblock %}
 {% block content %}
 {% load static %}
+{% load humanize %}
 {% load crispy_forms_tags %}
 
 <main id="main">
@@ -17,7 +18,7 @@
       <button class="nav-link active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all" type="button" role="tab" aria-controls="nav-all" aria-selected="true">All Vehicles</button>
       <button class="nav-link" id="nav-sold-tab" data-bs-toggle="tab" data-bs-target="#nav-sold" type="button" role="tab" aria-controls="nav-sold" aria-selected="false">Sold Vehicles</button>
       <button class="nav-link" id="nav-not_sold-tab" data-bs-toggle="tab" data-bs-target="#nav-not_sold" type="button" role="tab" aria-controls="nav-not_sold" aria-selected="false">Not Sold Vehicles</button>
-      <button class="nav-link" id="nav-waiting_payment-tab" data-bs-toggle="tab" data-bs-target="#nav-waiting_payment" type="button" role="tab" aria-controls="nav-waiting_payment" aria-selected="false">Vehicle Bids Waiting For Payments</button>
+      <button class="nav-link" id="nav-waiting_payment-tab" data-bs-toggle="tab" data-bs-target="#nav-waiting_payment" type="button" role="tab" aria-controls="nav-waiting_payment" aria-selected="false">Vehicle  Waiting For Payments</button>
      
     </div>
   </nav>
@@ -33,32 +34,36 @@
 <div class="col-md-6 col-lg-6 col-sm-12">
   <div class="card py-1  my-3"> 
     <div class="card-body">
-      <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_car.get_absolute_url}}">{{all_car.car_make}} ,{{all_car.car_name}} </a> </h5>
+      <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_car.get_absolute_url}}">{{all_car.category}} ,{{all_car.car_name}} </a> </h5>
       <ul class="list-unstyled">
         <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{all_car.stock_id}}</span></li>
          
-              <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-lighter ml-3">Ksh {{all_car.price}}</span></li>
+              <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-lighter ml-3">Ksh {{all_car.price |intcomma}}</span></li>
            
-              <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{all_car.mileage}}</span></li>
+              <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{all_car.mileage |intcomma}} kms</span></li>
   
    <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light text-info fs-6 fw-bold ml-3">{{all_car.status}}</span></li>
 
 </ul>
 {% if all_car.status == 'WAITING PAYMENT'%}
 <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-  <a href="" class="btn btn-sm btn-outline-success">Buyer Profile </a> 
-   <a href="{% url 'reject_approval' all_car.slug %}" class="btn btn-outline-primary">Cancel Approval</a>
   
+   {% comment %} <a href="{% url 'reject_approval' all_car.slug %}" class="btn btn-outline-primary">Cancel Approval</a> {% endcomment %}
+
+   <a href="{% url 'this_car_bids' all_car.slug %}" class="btn btn-sm btn-outline-info"><span class="badge rounded-pill bg-secondary ">{{all_car.car.count}} </span>  View Bids</a>
   </div>
    {% endif %}
 
 
    {% if all_car.status == 'SOLD' %}
 
-<a href="" class="btn btn-sm btn-outline-secondary"> View Buyer</a>
-{%elif all_car.status == 'PENDING' %}
 
-<a href="{% url 'this_car_bids' all_car.slug %}" class="btn btn-sm btn-outline-info">View Bids</a>
+{%elif all_car.status == 'NOT SOLD' %}
+{% if all_car.car.count == 0 %}
+<button  class="btn btn-sm btn-outline-info"> No Bids Yet</button>
+{% else %}
+<a href="{% url 'this_car_bids' all_car.slug %}" class="btn btn-sm btn-outline-info"><span class="badge rounded-pill bg-secondary ">{{all_car.car.count}} </span>  View Bids</a>
+{% endif %}
 {% endif %}
 
 </div>
@@ -121,13 +126,13 @@
   <div class="col-md-6 col-lg-6 col-sm-12">
     <div class="card py-1  my-3"> 
       <div class="card-body">
-        <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{sold_car.get_absolute_url}}">{{sold_car.car_make}} ,{{sold_car.car_name}} </a> </h5>
+        <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{sold_car.get_absolute_url}}">{{sold_car.category}} ,{{sold_car.car_name}} </a> </h5>
         <ul class="list-unstyled">
           <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-light fst-italic  ml-3">{{sold_car.stock_id}}</span></li>
            
-                <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{sold_car.price}}</span></li>
+                <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{sold_car.price |intcomma}}</span></li>
              
-                <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{sold_car.mileage}}</span></li>
+                <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{sold_car.mileage |intcomma}}</span></li>
     
      <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light text-info fs-6 fw-bold ml-3">{{sold_car.status}}</span></li>
   
@@ -135,10 +140,7 @@
 
   
   
-     {% if sold_car.status == 'SOLD' %}
-  
-  <a href="" class="btn btn-sm btn-outline-secondary"> View Buyer</a>
-  {%endif  %}
+    
   
   </div>
   </div>
@@ -170,13 +172,13 @@
       <div class="col-md-6 col-lg-6 col-sm-12">
         <div class="card py-1  my-3"> 
           <div class="card-body">
-            <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{not_sold_car.get_absolute_url}}">{{not_sold_car.car_make}} ,{{not_sold_car.car_name}} </a> </h5>
+            <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{not_sold_car.get_absolute_url}}">{{not_sold_car.category}} ,{{not_sold_car.car_name}} </a> </h5>
             <ul class="list-unstyled">
               <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-light fst-italic ml-3">{{not_sold_car.stock_id}}</span></li>
                
-                    <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{not_sold_car.price}}</span></li>
+                    <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{not_sold_car.price |intcomma}}</span></li>
                  
-                    <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{not_sold_car.mileage}}</span></li>
+                    <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{not_sold_car.mileage |intcomma}}</span></li>
         
          <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light text-danger fs-6 fw-bold ml-3">{{not_sold_car.status}}</span></li>
       
@@ -184,9 +186,14 @@
     
       
       
-         {% if not_sold_car.status == 'PENDING' %}
+         {% if not_sold_car.status == 'NOT SOLD' %}
 
-         <a href="{% url 'this_car_bids' not_sold_car.slug %}" class="btn btn-sm btn-outline-info">View Bids</a>
+       
+         {% if not_sold_car.car.count == 0 %}
+<button  class="btn btn-sm btn-outline-info"> No Bids Yet</button>
+{% else %}
+<a href="{% url 'this_car_bids' not_sold_car.slug %}" class="btn btn-sm btn-outline-info"><span class="badge rounded-pill bg-secondary ">{{not_sold_car.car.count}} </span>  View Bids</a>
+{% endif %}
          {% endif %}
       
       </div>
@@ -227,20 +234,20 @@
       <div class="col-md-6 col-lg-6 col-sm-12">
         <div class="card py-1  my-3"> 
           <div class="card-body">
-            <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{waiting_payment_car.get_absolute_url}}">{{waiting_payment_car.car_make}} ,{{waiting_payment_car.car_name}} </a> </h5>
+            <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{waiting_payment_car.get_absolute_url}}">{{waiting_payment_car.category}} ,{{waiting_payment_car.car_name}} </a> </h5>
             <ul class="list-unstyled">
               <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{waiting_payment_car.stock_id}}</span></li>
                
-                    <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{waiting_payment_car.price}}</span></li>
+                    <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{waiting_payment_car.price |intcomma}}</span></li>
                  
-                    <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{waiting_payment_car.mileage}}</span></li>
+                    <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{waiting_payment_car.mileage |intcomma }}</span></li>
         
          <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light text-success fs-6 fw-bold ml-3">{{waiting_payment_car.status}}</span></li>
       
       </ul>
       {% if waiting_payment_car.status == 'WAITING PAYMENT'%}
       <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-        <a href="" class="btn btn-sm btn-outline-success">Buyer Profile </a> 
+  
          <a href="{% url 'reject_approval' waiting_payment_car.slug %}" class="btn btn-outline-primary">Cancel Approval</a>
         
         </div>

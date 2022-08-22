@@ -4,19 +4,71 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% include 'includes/profile_message.html'%}
-<h3>Add Vehicle</h3>
-<form id="add_car" method="post" enctype="multipart/form-data" action="">
-{% csrf_token %}
- {{ form|crispy}}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
+    
+<main id="main"> 
+    <br>
+    
+  
+  <section class="breadcrumbs">
+      
+    <div class="container">
+  
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>Add Vehicles</h2>
+        <ol>
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li>Add Vehicles</li>
+        </ol>
+      </div>
+  
+    </div>
+  </section><!-- Job breadcrumbs Section --> 
 
-{% comment %} {{ImageForm.management_form}}
-{%for form in imageform %}
-{{form }}
-{%endfor%}  {% endcomment %}
+<h3 class="text-center py-3 fs-2">Add Vehicle</h3>
+    <div class="d-flex justify-content-center fw-bold text-capitalize pb-5">
+<div class="form-field col-9">
+    <form id="add_car" method="post" enctype="multipart/form-data" action="">
+        {% csrf_token %}
+         {% crispy form %}
+        
+      
+        </form>
+</div>
+</div>
+</main>
+<script type="text/javascript">
+  
+    $.validator.addMethod('filesize', function (value, element, param) {
+      return this.optional(element)||(element.files[0].size <= param * 1000000)
+  }, 'File size must be less than {0}');
+  
+  jQuery(function ($) {
+      "use strict";
+      $('#add_car').validate({
+          rules: {
+              
+              images: {
+                  required: true,
+                  extension: "jpg,jpeg,png",
+                  filesize: 5,
+              },
+          },
+          messages: {
+            
+            images :{
+              filesize:'File size must be less than 5 mb.',
+              accept:"Please upload .jpg or .png or .jpeg file of notice.",
+            
+          },
+        },
+      });
+  });
 
+</script>
 
-
-{% comment %} {{ imageform|crispy}}  {% endcomment %}
-<input type="submit" value="submit"/>
-</form>
 {% endblock %}

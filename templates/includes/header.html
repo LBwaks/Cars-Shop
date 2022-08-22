@@ -82,7 +82,7 @@
       <div class="container d-flex justify-content-between align-items-center">
   
         <div class="logo">
-          <h1 class="text-light"><a href="index.html"><span>Kazi Yangu</span></a></h1>
+          <h1 class="text-light"><a ><span>Gujarati</span></a></h1>
           <!-- Uncomment below if you prefer to use an image logo -->
           <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
         </div>
@@ -94,12 +94,30 @@
             <li><a class="{% if url_name == 'cars' %}active{% endif %}"  href="{% url 'cars' %}">Vehicles</a></li>
             <li><a class="{% if url_name == 'add_vehicles' %}active{% endif %}"  href="{% url 'add_vehicles' %}">Post Vehicle</a></li>
             
-            {% if user.is_authenticated %}
-            {% comment %} start of notification {% endcomment %}
-  
+
+            {% if user.is_authenticated and user.is_staff %}
             
+            
+            <li class="dropdown "><a href="#"><span> {{user.username}}</span> <i class="bi bi-chevron-down"></i></a>
+              <ul> 
+                <li><a class="{% if url_name == 'admin' %}active{% endif %}"  href="{% url 'admin:index' %}">Admin</a></li>
+
+              {% comment %} {% if user.personal.user_type == 'recruiter' %} {% endcomment %}
+                <li><a href="{% url 'my_cars' %}">My Vehicles </a></li>
+                {% comment %} {% elif user.personal.user_type == 'seeker' %} {% endcomment %}
+                
+                <li><a href="{% url 'my_bids' %}">My Bids </a></li>
+                <li><a href="{% url 'favourites' %}">My Bookmarks </a></li>
+              
+                
+                 <li><a href=" {% url 'account_logout'%}">Sign Out </a></li>
+              </ul>
+            </li>
+
+            {% elif  user.is_authenticated and not user.is_staff %}
   
             {% comment %} end of notification {% endcomment %}
+            
             <li class="dropdown "><a href="#"><span> {{user.username}}</span> <i class="bi bi-chevron-down"></i></a>
               <ul> 
               {% comment %} {% if user.personal.user_type == 'recruiter' %} {% endcomment %}
@@ -109,8 +127,8 @@
                 <li><a href="{% url 'my_bids' %}">My Bids </a></li>
                 <li><a href="{% url 'favourites' %}">My Bookmarks </a></li>
                 {% comment %} {% endif %} {% endcomment %}
-                {% if user.personal.user.username %}
-                <li><a href="{% url 'my-profile' user.profile.profile_uuid  %}">My Profile</a></li>
+                {% if user.profile %}
+                <li><a href="{% url 'profile' user.profile.profile_uuid  %}">My Profile</a></li>
                 {% else %}
             <li><a href="{% url 'add_profile' %}">Create Profile</a></li>
             
@@ -132,3 +150,17 @@
   
       </div>
     </header><!-- End Header -->
+
+    {% if messages %}
+
+{% for message in messages %}
+{% if message.tags == 'success' %}
+<script src="{% static 'plugins/sweetalert/sweetalert2.all.min.js' %}"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    var m = "{{message}};"
+    Swal.fire('Success !',m,'success')
+</script>
+{% endif%}
+{% endfor %}
+{% endif %}

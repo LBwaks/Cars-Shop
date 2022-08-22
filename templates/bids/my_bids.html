@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}Add Vehicle {% endblock %}
+{% block title %}My Bids{% endblock %}
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
+{% load humanize %}
 
 
 <main id="main">
@@ -30,12 +31,10 @@
       
   <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-      <button class="nav-link active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all" type="button" role="tab" aria-controls="nav-all" aria-selected="true">All Car Bids</button>
-      <button class="nav-link " id="nav-waiting_payment-tab" data-bs-toggle="tab" data-bs-target="#nav-waiting_payment" type="button" role="tab" aria-controls="nav-waiting_payment" aria-selected="false">Cars Bids Waiting For Payments</button>   
-      <button class="nav-link" id="nav-rejected-tab" data-bs-toggle="tab" data-bs-target="#nav-rejected" type="button" role="tab" aria-controls="nav-rejected" aria-selected="false">Approval Bids Rejected</button>
-      <button class="nav-link" id="nav-pending-tab" data-bs-toggle="tab" data-bs-target="#nav-pending" type="button" role="tab" aria-controls="nav-pending" aria-selected="false">Pending Car Bids</button>
-      <button class="nav-link" id="nav-failed-tab" data-bs-toggle="tab" data-bs-target="#nav-failed" type="button" role="tab" aria-controls="nav-failed" aria-selected="false">failed Cars</button>
-   
+      <button class="nav-link active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all" type="button" role="tab" aria-controls="nav-all" aria-selected="true">All Vehicle Bids</button>
+      <button class="nav-link " id="nav-waiting_payment-tab" data-bs-toggle="tab" data-bs-target="#nav-waiting_payment" type="button" role="tab" aria-controls="nav-waiting_payment" aria-selected="false"> Waiting For Payments</button>   
+      <button class="nav-link" id="nav-rejected-tab" data-bs-toggle="tab" data-bs-target="#nav-rejected" type="button" role="tab" aria-controls="nav-rejected" aria-selected="false">Rejected Approval</button>
+      <button class="nav-link" id="nav-pending-tab" data-bs-toggle="tab" data-bs-target="#nav-pending" type="button" role="tab" aria-controls="nav-pending" aria-selected="false">Pending Vehicle Bids</button>
     </div>
   </nav>
   <div class="tab-content" id="nav-tabContent">
@@ -43,25 +42,25 @@
       
       <div class="container">
         <div class="row d-flex align-items-stretch">
-        <h3 class="text-center my-4">Car Bids Waiting For Payments</h3>
+        <h3 class="text-center my-4">Vehicle Bids Waiting For Payments</h3>
 
 {% for waiting_payment_bid in waiting_payment_bids%}
 <div class="col-md-6 col-lg-6 col-sm-12">
   <div class="card shadow  mb-5 bg-body rounded py-1  my-3"> 
     <div class="card-body">
-      <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{waiting_payment_bid.car.get_absolute_url}}">{{waiting_payment_bid.car.car_make}} ,{{waiting_payment_bid.car.car_name}} </a> </h5>
+      <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{waiting_payment_bid.car.get_absolute_url}}">{{waiting_payment_bid.car.category}} ,{{waiting_payment_bid.car.car_name}} </a> </h5>
       <ul class="list-unstyled">
-        <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{waiting_payment_bid.car.stock_id}}</span></li>
+        <li  class="lh-lg"><span class="fw-bold"> Vehicle StockId : </span> <span class="fw-lighter fst-italic ml-3">{{waiting_payment_bid.car.stock_id}}</span></li>
          
-              <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{waiting_payment_bid.price}}</span></li>
+              <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{waiting_payment_bid.price |intcomma}}</span></li>
               {% if waiting_payment_bid.description %}  
-              <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{waiting_payment_bid.description}}</span></li>
+              <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{waiting_payment_bid.description|safe}}</span></li>
    {% endif%}
    <li  class="lh-lg"><span class="fw-bold"> Bid Status : </span> <span class="fw-light text-success fs-6 fw-bold ml-3">{{waiting_payment_bid.status}}</span></li>
 
 </ul>
 <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-  <a href="" class="btn btn-sm btn-outline-success">Buy Car </a> 
+  <a href=" {% url 'buy_car' waiting_payment_bid.slug %}"  class="btn btn-sm btn-outline-success">Buy Vehicle </a> 
    <a href="{% url 'reject_approval' waiting_payment_bid.slug %}" class="btn btn-outline-primary">Reject Bid Approval</a>
    </div>
 
@@ -102,21 +101,24 @@
 <div class="col-md-6 col-lg-6 col-sm-12">
   <div class="card shadow  mb-5 bg-body rounded py-1  my-3"> 
     <div class="card-body">
-      <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_bid.car.get_absolute_url}}">{{all_bid.car.car_make}} ,{{all_bid.car.car_name}} </a> </h5>
-      <p><span class="fw-bold">Body Type:</span> <span class="text-muted mx-1"> {{car.body_type }}</span></p> 
+      <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_bid.car.get_absolute_url}}">{{all_bid.car.category}} ,{{all_bid.car.car_name}} </a> </h5>
+      
       <ul class="list-unstyled">
-        <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{all_bid.car.stock_id}}</span></li>
+        <li  class="lh-lg"><span class="fw-bold"> Vehicle StockId : </span> <span class="fw-lighter fst-italic ml-3">{{all_bid.car.stock_id}}</span></li>
          
-              <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{all_bid.price}}</span></li>
+              <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{all_bid.price |intcomma}}</span></li>
               {% if all_bid.description %}  
-              <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{all_bid.description}}</span></li>
+              <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{all_bid.description|safe}}</span></li>
    {% endif%}
    <li  class="lh-lg"><span class="fw-bold"> Bid Status : </span> <span class="fw-light text-info fs-6 fw-bold ml-3">{{all_bid.status}}</span></li>
 
 </ul>
 {% if all_bid.status == 'WAITING PAYMENT'%}
 <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-  <a href="" class="btn btn-sm btn-outline-success">Buy Car </a> 
+  {% comment %} <button id="paypal-button-container" class="btn btn-sm btn-outline-success">Buy Car 22 </button> 
+  <div id="paypal-button-container"></div> {% endcomment %}
+  <a href=" {% url 'buy_car' all_bid.slug %}"  class="btn btn-sm btn-outline-success">Buy Vehicle </a> 
+  {% comment %} <div id="paypal-button-container"></div> {% endcomment %}
    <a href="{% url 'reject_approval' all_bid.slug %}" class="btn btn-outline-primary">Reject Bid Approval</a>
    </div>
    {% endif %}
@@ -186,7 +188,7 @@
     <div class="tab-pane fade" id="nav-rejected" role="tabpanel" aria-labelledby="nav-rejected-tab">
       <div class="container">
         <div class="row d-flex align-items-stretch">
-        <h3 class="text-center my-4">Car Bids Approval You Rejected </h3>
+        <h3 class="text-center my-4">Vehicle Bids Approval You Rejected </h3>
   
   
 
@@ -195,13 +197,13 @@
   <div class="col-md-6 col-lg-6 col-sm-12">
     <div class="card py-1  my-3"> 
       <div class="card-body">
-        <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_bid.car.get_absolute_url}}">{{rejected_bid.car.car_make}} ,{{rejected_bid.car.car_name}} </a> </h5>
+        <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_bid.car.get_absolute_url}}">{{rejected_bid.car.category}} ,{{rejected_bid.car.car_name}} </a> </h5>
         <ul class="list-unstyled">
-          <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{rejected_bid.car.stock_id}}</span></li>
+          <li  class="lh-lg"><span class="fw-bold"> Vehicle StockId : </span> <span class="fw-lighter fst-italic ml-3">{{rejected_bid.car.stock_id}}</span></li>
            
-                <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{rejected_bid.price}}</span></li>
+                <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{rejected_bid.price |intcomma}}</span></li>
                 {% if rejected_bid.description %}  
-                <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{rejected_bid.description}}</span></li>
+                <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{rejected_bid.description|safe}}</span></li>
      {% endif%}
      <li  class="lh-lg"><span class="fw-bold"> Bid Status : </span> <span class="fw-light text-danger fs-6 fw-bold ml-3">{{rejected_bid.status}}</span></li>
   
@@ -236,13 +238,13 @@
       <div class="col-md-6 col-lg-6 col-sm-12">
         <div class="card py-1  my-3"> 
           <div class="card-body">
-            <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_bid.car.get_absolute_url}}">{{pending_bid.car.car_make}} ,{{pending_bid.car.car_name}} </a> </h5>
+            <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{all_bid.car.get_absolute_url}}">{{pending_bid.car.category}} ,{{pending_bid.car.car_name}} </a> </h5>
             <ul class="list-unstyled">
               <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{pending_bid.car.stock_id}}</span></li>
                
-                    <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{pending_bid.price}}</span></li>
+                    <li  class="lh-lg"><span class="fw-bold"> Your Bid Price : </span> <span class="fw-light ml-3">Ksh {{pending_bid.price |intcomma}}</span></li>
                     {% if pending_bid.description %}  
-                    <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{pending_bid.description}}</span></li>
+                    <li  class="lh-lg"><span class="fw-bold"> Reason For Your Price : </span> <span class="fw-light ml-3">{{pending_bid.description|safe}}</span></li>
          {% endif%}
          <li  class="lh-lg"><span class="fw-bold"> Bid Status : </span> <span class="fw-light text-black-50 fs-6 fw-bold ml-3">{{pending_bid.status}}</span></li>
       
@@ -269,27 +271,7 @@
   </div>
 </div>
 
-    <div class="tab-pane fade" id="nav-failed" role="tabpanel" aria-labelledby="nav-failed-tab">
-      <h3>Fialed Bid</h3>
-      {% for failed_bid in failed_bids %}
-<p>Car Name:{{failed_bid.car_name }}</p>
-<p>Car Name:{{failed_bid.body_type }}</p>
-<p>Car Name:{{failed_bid.price }}</p>
-<p>Status{{failed_bid.status}}</p>
 
-<hr>
-{% empty %}
-<div class="col-md-12">
-  <div class="card py-1  my-3"> 
-    <div class="card-body text-center">
-   
-      <p class="card-text"> You Have Not Rejected Any Car Bid Approval !</p>
-      
-    </div>
-  </div>
-  </div>
-{% endfor %}
-    </div>
     
   </div>
   </div>
@@ -305,5 +287,38 @@
 
 
 </main><!-- End #main -->
+{% block scripts%}
+<script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
+<script>
+    paypal.Buttons({
+      // Sets up the transaction when a payment button is clicked
+      createOrder: (data, actions) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: '{{waiting_payment_bid.price |intcomma}} ' // Can also reference a variable or function
+            }
+          }]
+        });
+      },
+      // Finalize the transaction after payer approveaderal
+      onApprove: (data, actions) => {
+        return actions.order.capture().then(function(orderData) {
+          // Successful capture! For dev/demo purposes:
+          console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+          const transaction = orderData.purchase_units[0].payments.captures[0];
+          alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+          // When ready to go live, remove the alert and show a success message within this page. For example:
+          // const element = document.getElementById('paypal-button-container');
+          // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+          // Or go to another URL:  actions.redirect('thank_you.html');
+        });
+      }
+    }).render('#paypal-button-container');
+  </script>
+
+
+  
+{% endblock %}
 
 {% endblock %}

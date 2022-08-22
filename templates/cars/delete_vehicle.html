@@ -1,17 +1,62 @@
 {% extends 'base.html' %}
-{% block title %} Vehicles {% endblock %}
+{% block title %} Edit Vehicles {% endblock %}
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<form method="POST" enctype="multipart/form-data" id="car_edit">
-    {% csrf_token %}
-    {{ myform.media }}
-     {{ form|crispy}}
+{% include 'includes/profile_message.html'%}
+
+<section class="breadcrumbs">
     
-    <div class="d-grid gap-2 col-6 mx-auto">
-      
-      <button class="btn btn-primary" >Submit</button>
+  <div class="container">
+
+    <div class="d-flex justify-content-between align-items-center">
+      <h2>Delete Vehicle</h2>
+      <ol>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li>Delete</li>
+      </ol>
     </div>
-    </form>
+
+  </div>
+</section><!-- Job breadcrumbs Section -->
+
+    <section id="add_job" class="add_job " style="min-height:100vh;">
+      <div class="container ">
+     
+             <div class="row">
+     
+               <div class="col-lg-8 col-md-8 mx-auto d-flex  justify-content-center ">
+               <div class="card m-5 shadow-lg  bg-body rounded" style="width: 50rem;">
+               <div class="card-header text-center">
+         Are Sure You Want To Delete This Vehicle
+       </div> 
+       {% comment %} <h5 class="card-header text-center py-4">Add Artist's Event</h5> {% endcomment %}
+       <div class="card-body">
+     <p> <span class="fs-6 fw-bold m-2">Vehicle :</span> <span class="text-warning fw-bold">{{car.category }} {{car.car_name}}</span></p>
+     <p> <span class="fs-6 fw-bold m-2">Mileage:</span> <span class="text-muted fw-light"> {{car.mileage}} kms </span></p>
+     <p> <span class="fs-6 fw-bold m-2">Price:</span> <span class="fw-light ml-3"> ksh {{car.price }}</span></p>
+     <form method="POST" enctype="multipart/form-data">
+     {% csrf_token %}
+     {{ myform.media }}
+      {{ form|crispy}}
+     
+     <div class="d-grid gap-2 col-6 mx-auto">
+       
+       <button class="btn btn-danger" >Confirm Delete</button>
+     </div>
+     </form>
+     </div>
+     </div>
+     </div>
+     </div>
+     </div>
+     
+     
+     </section>
+
+
+
+
+
 
 {% endblock %}

@@ -11,6 +11,13 @@ from Bids.forms import BidForm,BidEditForm
 from django.utils import timezone
 import datetime
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.conf import settings
+from decimal import Decimal
+from paypal.standard.forms import PayPalPaymentsForm
+import uuid
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse_lazy,reverse
+from paypal.standard.forms import PayPalPaymentsForm
 
 # Create your views here.
 
@@ -21,18 +28,18 @@ class BidsView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(BidsView,self).get_context_data(**kwargs)
-        car = get_object_or_404(Car,slug=self.kwargs['slug'])
-        car_bid_count = Bid.objects.filter(car=car)
+        car = get_object_or_404(Car.objects.select_related('user','category'),slug=self.kwargs['slug'])
+        car_bid_count = Bid.objects.select_related('user','car').filter(car=car)
         context["car_bid_count"] = car_bid_count
         return context
 
-class BidDetailView(SuccessMessageMixin,LoginRequiredMixin,DetailView):
+class BidDetailView(LoginRequiredMixin,DetailView):
     model = Bid 
     template_name = 'bids/bid_details.html'
 
     def get_context_data(self, **kwargs):
         context = super(BidDetailView,self).get_context_data(**kwargs)
-        bid = get_object_or_404(Bid,slug=self.kwargs['slug'])
+        bid = get_object_or_404(Bid.objects.select_related('user','car'),slug=self.kwargs['slug'])
         context["bid"] = bid
         return context
 class DeleteBidView(SuccessMessageMixin,LoginRequiredMixin,DeleteView):
@@ -48,10 +55,13 @@ class AddBidView(SuccessMessageMixin,LoginRequiredMixin,CreateView):
     template_name = 'bids/add_bids.html'
     success_message = 'Bid Car Successful !'
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context[""] = 
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        car = get_object_or_404(Car,id=self.kwargs['car_id'])
+        other_bids = Bid.objects.filter(user_id= self.request.user.id,car_id=car)
+        context["car"] = car
+        context["other_bids"] = other_bids
+        return context
     
     def form_valid(self,form):
         bid = form.save(commit=False)
@@ -73,9 +83,9 @@ class MyBidsView(LoginRequiredMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super(MyBidsView,self).get_context_data(**kwargs)
-        all_bids = Bid.objects.filter(user = self.request.user).order_by('-created_date')
+        all_bids = Bid.objects.select_related('user','car').filter(user = self.request.user).order_by('-created_date')
         page=self.request.GET.get('page',1)
-        paginator =Paginator(all_bids,2)
+        paginator =Paginator(all_bids,12)
         try:
                 all_bids=paginator.page(page)
         except PageNotAnInteger:
@@ -83,24 +93,73 @@ class MyBidsView(LoginRequiredMixin,ListView):
         except EmptyPage:
               all_bids=paginator.page(paginator.num_pages) 
               
-        accepted_bids = Bid.objects.filter(user = self.request.user,status='APPROVED').order_by('-created_date')
-        pending_bids = Bid.objects.filter(user = self.request.user ,status='PENDING').order_by('-created_date')
-        rejected_bids = Bid.objects.filter(user = self.request.user,status ='REJECTED').order_by('-created_date')
-        waiting_payment_bids = Bid.objects.filter(user = self.request.user,status ='WAITING PAYMENT').order_by('-created_date')
+        accepted_bids = Bid.objects.select_related('user','car').filter(user = self.request.user,status='APPROVED').order_by('-created_date')
+        pending_bids = Bid.objects.select_related('user','car').filter(user = self.request.user ,status='PENDING').order_by('-created_date')
+        rejected_bids = Bid.objects.select_related('user','car').filter(user = self.request.user,status ='REJECTED').order_by('-created_date')
+        waiting_payment_bids = Bid.objects.select_related('user','car').filter(user = self.request.user,status ='WAITING PAYMENT').order_by('-created_date')
         context = {
             'all_bids':all_bids,'accepted_bids':accepted_bids,'pending_bids':pending_bids,'rejected_bids':rejected_bids,'waiting_payment_bids':waiting_payment_bids
         }
         return context
     
 def reject_approval(request,slug):
-    bid =get_object_or_404(Bid,slug = slug)
+    bid =get_object_or_404(Bid.objects.select_related('user','car'),slug = slug)
     if bid.status == 'WAITING PAYMENT':
         car_id = bid.car_id
         car = get_object_or_404(Car,id = car_id)
-        car.status = 'PENDING'
+        car.status = 'NOT SOLD'
         car.save()        
     bid.status ='REJECTED'
     bid.cancel_reject_time=timezone.now()
     bid.save()
     messages.success(request,'Approval Rejected!')
-    return redirect('my_bids')    
+    return redirect('my_bids')
+
+def update_payments(request,slug):
+    bid =get_object_or_404(Bid.objects.select_related('user','car'),slug = slug)
+    if bid.status == 'WAITING PAYMENT':
+        car_id = bid.car_id
+        car = get_object_or_404(Car,id = car_id)
+        car.status = 'SOLD'
+        car.save()        
+    bid.status ='SOLD'
+    bid.cancel_reject_time=timezone.now()
+    bid.save()
+    messages.success(request,'Vehicle Purchase Successfull !')
+    return redirect('home')    
+
+def buy_car(request,slug):
+    host = request.get_host()
+    bid =get_object_or_404(Bid.objects.select_related('user','car'),slug = slug)
+    bid_price =bid.price
+    car_id = bid.car_id
+    car = get_object_or_404(Car,id = car_id)
+    vehicle_name = car.category 
+    car_stock= car.stock_id
+
+
+    paypal_dict = {
+        'business': settings.PAYPAL_RECEIVER_EMAIL,
+        'amount': 77,
+        'item_name': vehicle_name,
+        'invoice': car_stock,
+        'currency_code': 'KSH',
+        'notify_url': 'http://{}{}'.format(host,
+                                           reverse('paypal-ipn')),
+        'return_url': 'http://{}{}'.format(host,
+                                           reverse('payment_done')),
+        'cancel_return': 'http://{}{}'.format(host,
+                                              reverse('payment_cancelled')),
+    }
+
+    form = PayPalPaymentsForm(initial=paypal_dict)
+    return render(request, 'payments/process_payments.html', {'bid': bid,'car':car,'form':form})
+
+@csrf_exempt
+def payment_done(request):
+    return render(request, 'payments/payments_done.html')
+
+
+@csrf_exempt
+def payment_canceled(request):
+    return render(request, 'payments/payments_cancelled.html')

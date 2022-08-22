@@ -5,4 +5,4 @@ register = template.Library()
 @register.simple_tag
 
 def vehicle_categories():
-    return Category.objects.all().annotate(tags_count=Count('car'))
+    return Category.objects.all().annotate(category_count=Count('car'))

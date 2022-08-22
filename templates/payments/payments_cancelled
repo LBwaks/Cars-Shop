@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %} Make Payments {% endblock %}
+
+{% block content %}
+    <h4>Payments cancle</h4>
+    
+
+
+{% endblock %}

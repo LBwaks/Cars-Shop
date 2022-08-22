@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
 import uuid
 from django.urls import reverse
+from django_resized import ResizedImageField
 from PIL import Image
 # Create your models here.
 
@@ -121,7 +122,7 @@ class Profile(models.Model):
 
     profile_uuid = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     user = models.OneToOneField(User,on_delete=models.CASCADE)
-    user_type =models.CharField(choices=users_type,max_length=30)
+    # user_type =models.CharField(choices=users_type,max_length=30)
     fname =models.CharField(max_length=30)
     lname =models.CharField(max_length=30)
     email =models.EmailField(max_length=255,unique=True)
@@ -129,8 +130,9 @@ class Profile(models.Model):
     tell = PhoneNumberField()
     county =models.CharField(max_length=30,choices=county_choice)
     location_city_town=models.CharField(max_length=250)
-    address=models.CharField(max_length=250)
-    profile_photo =models.ImageField(upload_to =user_profile_path,blank=True,null=True,default='users/profile/user_0/profile.png')
+    
+    profile_photo =ResizedImageField(size=[510,350],quality=90,upload_to =user_profile_path,blank=True,null=True)
+    # ,default='users/profile/user_0/profile.png'
     created_date =models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -140,6 +142,7 @@ class Profile(models.Model):
     def profile_photo_url(self):
         if self.profile_photo and hasattr(self.profile_photo,'url'):
             return self.profile_photo.url
+    
     def get_absolute_url(self):
         return reverse("profile", kwargs={"profile_uuid": self.profile_uuid})
     

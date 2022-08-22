@@ -1,9 +1,27 @@
 {% extends 'base.html' %}
-{% block title %}Add Vehicle {% endblock %}
+{% block title %}This Car Bids {% endblock %}
 {% block content %}
 {% load static %}
+{% load humanize%}
 {% load crispy_forms_tags %}
 <main id="main">
+  <br>
+  <section class="breadcrumbs">
+      
+    <div class="container">
+  
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>Vehicle Bids</h2>
+        <ol>
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="{% url 'cars' %}">Vehicles</a></li>
+          <li>Vehicle Bids</li>
+        </ol>
+      </div>
+  
+    </div>
+  </section><!-- Job breadcrumbs Section --> 
+  <br>
       <section id="my_car" class="my_car" style="min-height:70vh;">
         <div class="container" data-aos="fade-up">
       
@@ -16,34 +34,42 @@
                         
                         
                         <div class="card py-1  my-3"> 
-                              <div class="card-body">
-                                <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{car_bid.car.get_absolute_url}}">{{car_bid.car.car_make}} ,{{car_bid.car.car_name}} </a> </h5>
+                          {% if car_bid.status == 'WAITING PAYMENT' %}
+                              <div class="card-body bg-success">
+                                {% else %}
+                                <div class="card-body">
+                                  {% endif %}
+                                <h5 class="card-title">Vehicle : <a class="text-warning fs-5 fw-bold text-uppercase text-decoration-none" href="{{car_bid.car.get_absolute_url}}">{{car_bid.car.category}} ,{{car_bid.car.car_name}} </a> </h5>
                                 <ul class="list-unstyled">
                                   <li  class="lh-lg"><span class="fw-bold"> Car StockId : </span> <span class="fw-lighter fst-italic ml-3">{{car_bid.car.stock_id}}</span></li>
                                    
-                                        <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{car_bid.car.price}}</span></li>
+                                        <li  class="lh-lg"><span class="fw-bold"> Car Price: </span> <span class="fw-light ml-3">Ksh {{car_bid.car.price|intcomma}}</span></li>
                                      
-                                        <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{car_bid.car.mileage}}</span></li>
+                                        <li  class="lh-lg"><span class="fw-bold"> Mileage : </span> <span class="fw-light ml-3">{{car_bid.car.mileage|intcomma}} kms</span></li>
                             
                              <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light text-info fs-6 fw-bold ml-3">{{car_bid.car.status}}</span></li>
                           <hr>
-                          <li  class="lh-lg"><span class="fw-bold"> Bid Price : </span> <span class="fw-light ml-3">ksh {{car_bid.price}}</span></li>
-                          <li  class="lh-lg"><span class="fw-bold"> Reason For Bid Price : </span> <span class="fw-light ml-3">{{car_bid.description}}</span></li>
-                         
+                          <li  class="lh-lg"><span class="fw-bold"> Bid Price : </span> <span class="fw-light ml-3">ksh {{car_bid.price|intcomma}}</span></li>
+                          {% if car_bid.description %}
+                          <li  class="lh-lg"><span class="fw-bold"> Reason For Bid Price : </span> <span class="fw-light ml-3">{{car_bid.description|capfirst|safe}}</span></li>
+                         {% endif %}
                           </ul>
+                          
                         
                           
-                          
-                             {% if car_bid.car.status == 'PENDING' %}
-                    
-                             <a href="{% url 'approve_bid' car_bid.slug %}" class="btn btn-outline-info">Approve Bid</a>
-                             {% endif %}
+                          {% if car_bid.status == 'WAITING PAYMENT' %}
+                             
 
                              {% if car_bid.car.status == 'WAITING PAYMENT' %}
                     
-                             <a href="{% url 'approve_bid' car_bid.slug %}" class="btn btn-outline-danger">Cancel Bid Approval</a>
+                             <a href="{% url 'approve_bid' car_bid.slug %}" class="btn btn-danger">Cancel Bid Approval</a>
                              {% endif %}
-                          
+                             {% else %}
+                             {% if car_bid.car.status == 'NOT SOLD' %}
+                    
+                             <a href="{% url 'approve_bid' car_bid.slug %}" class="btn btn-outline-info">Approve Bid</a>
+                             {% endif %}
+                          {% endif %}
                           </div>
                           </div>
                         

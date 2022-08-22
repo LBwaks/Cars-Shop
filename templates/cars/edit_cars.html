@@ -1,33 +1,41 @@
 {% extends 'base.html' %}
-{% block title %} Vehicles {% endblock %}
+{% block title %} Edit Vehicles {% endblock %}
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-  <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
+{% include 'includes/profile_message.html'%}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+
+<section class="breadcrumbs">
+    
+  <div class="container">
+
+    <div class="d-flex justify-content-between align-items-center">
+      <h2>Edit Vehicle</h2>
+      <ol>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'home' %}">Details</a></li>
+        <li>Edit</li>
+      </ol>
+    </div>
+
+  </div>
+</section><!-- Job breadcrumbs Section -->
+
+<h3 class="text-center py-3 fs-2">Edit</h3>
+    <div class="d-flex justify-content-center fw-bold text-capitalize pb-5">
+<div class="form-field col-9">
 <form method="POST" enctype="multipart/form-data" id="car_edit">
     {% csrf_token %}
     {{ myform.media }}
-     {{ form|crispy}}
+    {% crispy form %}
     
-    <div class="d-grid gap-2 col-6 mx-auto">
+    {% comment %} <div class="d-grid gap-2 col-6 mx-auto">
       
       <button class="btn btn-primary" >Submit</button>
-    </div>
+    </div> {% endcomment %}
     </form>
-    {% if messages %}
-
-    {% for message in messages %}
-    {% if message.tags == 'success' %}
-    <script src="{% static 'plugins/sweetalert/sweetalert2.all.min.js' %}"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        var m = "{{message}};"
-        Swal.fire('Perfect',m,'success')
-    </script>
-    {% endif%}
-    {% endfor %}
-    {% endif %}
+  </div>
+</div>
 {% endblock %}
