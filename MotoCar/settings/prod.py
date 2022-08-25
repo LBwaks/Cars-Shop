@@ -19,10 +19,9 @@ ALLOWED_HOSTS = [
 ]
 
 
-django_on_heroku.settings(locals(),staticfiles=False)
-del DATABASES['default']['OPTIONS']['sslmode']
 
-DEBUG_PROPAGATE_EXCEPTIONS =True
+
+DEBUG_PROPAGATE_EXCEPTIONS = TRUE
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -56,3 +55,6 @@ LOGGING = {
                
     }
 }
+
+# django_on_heroku.settings(locals(),staticfiles=False)
+del DATABASES['default']['OPTIONS']['sslmode']
